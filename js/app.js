@@ -1,5 +1,16 @@
 "use strict";
 
+// Variables
+// There will be 3 levels of game play, beginner, intermediate, expert
+var level = "beginner";
+
+// There will be 2 states of the game play: start and done
+var state = "start";
+
+// blockWidth and blockHeight are based on the engine.js
+// method provided for creating the grid
+var blockWidth = 101;
+var blockHeight = 83;
 // Enemies our player must avoid
 var Enemy = function(x,y,speed) {
     // Variables applied to each of our instances go here,
@@ -37,8 +48,40 @@ Enemy.prototype.render = function() {
 //          occurs
 
 // Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+// This class requires an update(), render() and a handleInput() method.
+var Player = function() {
+    this.sprite = 'images/char-horn-girl.png';
+    this.x = blockWidth/20;
+    this.y = blockHeight*5;
+    //this.speed = 10;
+};
+
+// Update Player's position
+Player.prototype.update = function() {
+    // Send player back to start if it reaches the water
+    if (this.y <= 0) {
+        this.y = blockHeight * 5;
+    }
+};
+
+// Draw the player on the screen, required method for game
+Player.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    console.log('location' + this.x + ',' + this.y);
+};
+
+// handleInput is the method for moving player on board
+Player.prototype.handleInput = function(key) {
+    if (key === 'left' && this.x > blockWidth/2) {
+        this.x -= blockWidth;
+    } else if (key === 'right' && this.x < 395) {
+        this.x += blockWidth;
+    } else if (key === 'up' && this.y > blockHeight/2) {
+        this.y -= blockHeight;
+    } else if (key === 'down' && this.y < blockHeight*5) {
+        this.y += blockHeight;
+    }
+};
 
 
 // Returns a random integer between min (included) and max (included)
@@ -50,11 +93,11 @@ function getRandomIntInclusive(min, max) {
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-
-var enemy1 = new Enemy(-100, 60, getRandomIntInclusive(300, 500));
-var enemy2 = new Enemy(-100, 180, getRandomIntInclusive(500, 800));
-var enemy3 = new Enemy(-100, 240, getRandomIntInclusive(800, 900));
-var enemy4 = new Enemy(-100, 120, getRandomIntInclusive(200, 900));
+var player = new Player();
+var enemy1 = new Enemy(-100, 60, getRandomIntInclusive(200, 400));
+var enemy2 = new Enemy(-100, 180, getRandomIntInclusive(400, 700));
+var enemy3 = new Enemy(-100, 240, getRandomIntInclusive(700, 800));
+var enemy4 = new Enemy(-100, 120, getRandomIntInclusive(100, 800));
 var allEnemies = [enemy1, enemy2, enemy3, enemy4];
 
 
