@@ -1,16 +1,11 @@
-"use strict";
+//"use strict";
 
 // Variables
-// There will be 3 levels of game play, beginner, intermediate, expert
-var level = "beginner";
-
-// There will be 2 states of the game play: start and done
-var state = "start";
-
-// blockWidth and blockHeight are based on the engine.js
+// BLOCK_WIDTH and BLOCK_HEIGHT are based on the engine.js
 // method provided for creating the grid
-var blockWidth = 101;
-var blockHeight = 83;
+var BLOCK_WIDTH = 101;
+var BLOCK_HEIGHT = 83;
+
 // Enemies our player must avoid
 var Enemy = function(x,y,speed) {
     // Variables applied to each of our instances go here,
@@ -42,17 +37,12 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// ToDo:  Generate Gems (Blue, Green, and Orange) and Heart and Star
-//          Have these display in the grass for random time periods
-//          and assign points that can be gained if collision of player
-//          occurs
-
-// Now write your own player class
+// Create Player class
 // This class requires an update(), render() and a handleInput() method.
 var Player = function() {
     this.sprite = 'images/char-horn-girl.png';
-    this.x = blockWidth/20;
-    this.y = blockHeight*5;
+    this.x = BLOCK_WIDTH/20;
+    this.y = BLOCK_HEIGHT*5;
     //this.speed = 10;
 };
 
@@ -60,7 +50,7 @@ var Player = function() {
 Player.prototype.update = function() {
     // Send player back to start if it reaches the water
     if (this.y <= 0) {
-        this.y = blockHeight * 5;
+        this.y = BLOCK_HEIGHT * 5;
     }
 };
 
@@ -72,17 +62,61 @@ Player.prototype.render = function() {
 
 // handleInput is the method for moving player on board
 Player.prototype.handleInput = function(key) {
-    if (key === 'left' && this.x > blockWidth/2) {
-        this.x -= blockWidth;
+    if (key === 'left' && this.x > BLOCK_WIDTH/2) {
+        this.x -= BLOCK_WIDTH;
     } else if (key === 'right' && this.x < 395) {
-        this.x += blockWidth;
-    } else if (key === 'up' && this.y > blockHeight/2) {
-        this.y -= blockHeight;
-    } else if (key === 'down' && this.y < blockHeight*5) {
-        this.y += blockHeight;
-    }
+        this.x += BLOCK_WIDTH;
+    } else if (key === 'up' && this.y > BLOCK_HEIGHT/2) {
+        this.y -= BLOCK_HEIGHT;
+    } else if (key === 'down' && this.y < BLOCK_HEIGHT*5) {
+        this.y += BLOCK_HEIGHT;
+    // Toggle Pause
+    // } else if (key === 'pause' && this.pause) {
+    // this.pause = false;
+    // } else if (key === 'pause' && !this.pause) {
+    // this.pause = true;
+     }
 };
 
+// Check for collisions
+// Player.prototype.checkCollisions = function() {
+//         //check collision with enemies
+//         var enemies=allEnemies.length;
+//         for (var i = 0; i < enemies;  i++) {
+//             if (this.x < allEnemies[i].x + 50 && this.x + 50 > allEnemies[i].x &&
+//                 this.y < allEnemies[i].y + 50 && this.y + 50 > allEnemies[i].y) {
+//                 console.log('enemy hit');
+//                 this.lifeOver();
+//                 this.reset();
+//             }
+//         }
+
+// }
+
+// Enemy hit results in player death
+// Player.prototype.lifeOver = function() {
+
+// }
+
+// Create Game class (template definition of object's properties and methods)
+// This class requires play(), pause(), advanceLevel(), and gameOver() methods
+// var Game = function() {
+//     this.pause = false,
+//     this.level = 1,
+//     this.score = 0,
+//     this.init();
+// }
+
+
+// Game.prototype.init = function () {
+//     this.player = new Player();
+//     this.allEnemies = [
+//         new Enemy(-100, 60, getRandomIntInclusive(200, 400)),
+//         new Enemy(-100, 180, getRandomIntInclusive(400, 700)),
+//         new Enemy(-100, 240, getRandomIntInclusive(700, 800)),
+//         new Enemy(-100, 120, getRandomIntInclusive(100, 800))
+//         ];
+// }
 
 // Returns a random integer between min (included) and max (included)
 // Using Math.round() will give you a non-uniform distribution!
@@ -109,8 +143,14 @@ document.addEventListener('keyup', function(e) {
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down'
+        40: 'down',
+        112: 'pause' // F1 key to pause play
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+// -----------------------------------------------
+// Game constructor
+// -----------------------------------------------
+//var game = new Game();
