@@ -45,9 +45,11 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
-        update(dt);
-        render();
-
+        if (game.pause === false) {
+            update(dt);
+            game.update();
+            render();
+        }
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
          */
@@ -71,7 +73,6 @@ var Engine = (function(global) {
     }
 
 
-
     /* This function is called by main (our game loop) and itself calls all
      * of the functions which may need to update entity's data. Based on how
      * you implement your collision detection (when two entities occupy the
@@ -84,6 +85,15 @@ var Engine = (function(global) {
     function update(dt) {
         updateEntities(dt);
         // checkCollisions();
+        // lbg
+      // if (game.pause === true) {
+      //   //game.pause = true;
+      //   game.player.render();
+      //   setTimeout(function() {
+      //     init();
+      //     game.pause = false;
+      //   }.bind(this), 500);
+      // }
     }
 
     /* This is called by the update function and loops through all of the
@@ -94,10 +104,10 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
-        allEnemies.forEach(function(enemy) {
+        game.allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        player.update();
+        game.player.update();
     }
 
     /* This function initially draws the "game level", it will then call
@@ -150,11 +160,11 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
-        allEnemies.forEach(function(enemy) {
+        game.allEnemies.forEach(function(enemy) {
             enemy.render();
         });
 
-        player.render();
+        game.player.render();
     }
 
     /* This function does nothing but it could have been a good place to

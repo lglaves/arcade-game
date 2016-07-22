@@ -1,5 +1,3 @@
-//"use strict";
-
 // Variables
 // BLOCK_WIDTH and BLOCK_HEIGHT are based on the engine.js
 // method provided for creating the grid
@@ -43,7 +41,6 @@ var Player = function() {
     this.sprite = 'images/char-horn-girl.png';
     this.x = BLOCK_WIDTH/20;
     this.y = BLOCK_HEIGHT*5;
-    //this.speed = 10;
 };
 
 // Update Player's position
@@ -51,15 +48,17 @@ Player.prototype.update = function() {
     // Send player back to start if it reaches the water
     if (this.y <= 0) {
         this.y = BLOCK_HEIGHT * 5;
+        console.log ('Reached water');
     }
 };
 
 // Draw the player on the screen, required method for game
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    console.log('location' + this.x + ',' + this.y);
+    //console.log('location' + this.x + ',' + this.y);
 };
 
+// lbg
 // handleInput is the method for moving player on board
 Player.prototype.handleInput = function(key) {
     if (key === 'left' && this.x > BLOCK_WIDTH/2) {
@@ -71,11 +70,17 @@ Player.prototype.handleInput = function(key) {
     } else if (key === 'down' && this.y < BLOCK_HEIGHT*5) {
         this.y += BLOCK_HEIGHT;
     // Toggle Pause
-    // } else if (key === 'pause' && this.pause) {
-    // this.pause = false;
-    // } else if (key === 'pause' && !this.pause) {
-    // this.pause = true;
+    } else if (key === 'pause' && game.pause) {
+        console.log('game.pause = ' + game.pause);
+        console.log('now changing to false');
+        game.pause = false;
+    } else if (key === 'pause' && !game.pause) {
+        console.log('game.pause = ' + game.pause);
+        console.log('now changing to true');
+        game.pause = true;
      }
+     console.log('Player key='+ key);
+     console.log('game = ' + game)
 };
 
 // Check for collisions
@@ -100,23 +105,32 @@ Player.prototype.handleInput = function(key) {
 
 // Create Game class (template definition of object's properties and methods)
 // This class requires play(), pause(), advanceLevel(), and gameOver() methods
-// var Game = function() {
-//     this.pause = false,
-//     this.level = 1,
-//     this.score = 0,
-//     this.init();
-// }
+var Game = function() {
+    this.pause = false,
+    this.gameLevel = 1,
+    this.gameScore = 0,
+    this.init();
+};
+
+// Initialize new game
+Game.prototype.init = function () {
+    this.player = new Player();
+    this.allEnemies = [
+        new Enemy(-100, 60, getRandomIntInclusive(200, 400)),
+        new Enemy(-100, 180, getRandomIntInclusive(400, 700)),
+        new Enemy(-100, 240, getRandomIntInclusive(700, 800)),
+        new Enemy(-100, 120, getRandomIntInclusive(100, 800))
+        ];
+};
 
 
-// Game.prototype.init = function () {
-//     this.player = new Player();
-//     this.allEnemies = [
-//         new Enemy(-100, 60, getRandomIntInclusive(200, 400)),
-//         new Enemy(-100, 180, getRandomIntInclusive(400, 700)),
-//         new Enemy(-100, 240, getRandomIntInclusive(700, 800)),
-//         new Enemy(-100, 120, getRandomIntInclusive(100, 800))
-//         ];
-// }
+// If player wins round by reaching water safely, advance level
+Game.prototype.update = function () {
+     if (this.player.getsHome === true) {
+         console.log ('Reached water');
+     }
+
+};
 
 // Returns a random integer between min (included) and max (included)
 // Using Math.round() will give you a non-uniform distribution!
@@ -124,16 +138,28 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
-var player = new Player();
-var enemy1 = new Enemy(-100, 60, getRandomIntInclusive(200, 400));
-var enemy2 = new Enemy(-100, 180, getRandomIntInclusive(400, 700));
-var enemy3 = new Enemy(-100, 240, getRandomIntInclusive(700, 800));
-var enemy4 = new Enemy(-100, 120, getRandomIntInclusive(100, 800));
-var allEnemies = [enemy1, enemy2, enemy3, enemy4];
-
+// handleInput is the method for moving player on board
+// Game.prototype.handleInput = function(key) {
+//     if (key === 'left' && this.player.x > BLOCK_WIDTH/2) {
+//         this.player.x -= BLOCK_WIDTH;
+//     } else if (key === 'right' && this.player.x < 395) {
+//         this.player.x += BLOCK_WIDTH;
+//     } else if (key === 'up' && this.player.y > BLOCK_HEIGHT/2) {
+//         this.player.y -= BLOCK_HEIGHT;
+//     } else if (key === 'down' && this.player.y < BLOCK_HEIGHT*5) {
+//         this.player.y += BLOCK_HEIGHT;
+//     // Toggle Pause
+//     } else if (key === 'pause') {
+//         console.log('key === SPACE');
+//     } else if (key === 'pause' && this.pause === true) {
+//         console.log('this.pause=' +this.pause+ 'now changing to false');
+//         this.pause = false;
+//     } else if (key === 'pause' && this.pause === false) {
+//         console.log('this.pause=' +this.pause+ 'now changing to true');
+//         this.pause = true;
+//      }
+//      console.log('Game key = ' + key);
+// };
 
 
 // This listens for key presses and sends the keys to your
@@ -144,13 +170,13 @@ document.addEventListener('keyup', function(e) {
         38: 'up',
         39: 'right',
         40: 'down',
-        112: 'pause' // F1 key to pause play
+        32: 'pause' // space key to pause play
     };
-
-    player.handleInput(allowedKeys[e.keyCode]);
+// lbg
+    game.player.handleInput(allowedKeys[e.keyCode]);
 });
 
 // -----------------------------------------------
 // Game constructor
 // -----------------------------------------------
-//var game = new Game();
+var game = new Game();
