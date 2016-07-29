@@ -2,10 +2,51 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Frogger Game</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arcade Game</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Merienda+One" rel="stylesheet">
+    <!-- Favicons -->
+<!--     <link rel="shortcut icon" href="favicon.ico" /> -->
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://use.fontawesome.com/bfe1adca24.js"></script>
+    <!-- Stylesheet -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<div class="container-fluid display">
+    <div class="col-xs-12">
+      <h2>Help My Buddy Escape the Stinkbug Invasion</h2>
+    </div>
+    <div class="col-xs-12">
+        <button type="button" class="btn btn-lg btn-custom" data-toggle="modal" data-target="#myModal">How to Play</button>
+    </div>
+</div>
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <p>Some text in the modal.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-custom" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
     <script src="js/resources.js"></script>
     <script src="js/app.js"></script>
     <script src="js/engine.js"></script>

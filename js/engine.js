@@ -45,6 +45,7 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
+        /* If game is paused then do not updated and cease rendering */
         if (game.pause === false) {
             update(dt);
             game.update();
@@ -84,16 +85,17 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
-        // lbg
-      // if (game.pause === true) {
-      //   //game.pause = true;
-      //   game.player.render();
-      //   setTimeout(function() {
-      //     init();
-      //     game.pause = false;
-      //   }.bind(this), 500);
-      // }
+        //console.log("in updateEntities, dt = " + dt);
+        game.checkCollisions();
+        //console.log('game.player.playerHit: ' + game.player.playerHit );
+        // if ((game.player.playerHit === true) && (game.player.playerLifes === 0)){
+        //     //game.displayGameEndScreen();
+        //     console.log("Game End");
+        // }
+        // if ((game.player.playerHit === true) && (game.player.playerLifes > 0)) {
+        //     console.log("One Life Lost");
+        //     //game.resetGame();
+        // }
     }
 
     /* This is called by the update function and loops through all of the
@@ -108,6 +110,7 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         game.player.update();
+        // this does not work here!! --> game.displayStatus();
     }
 
     /* This function initially draws the "game level", it will then call
@@ -172,6 +175,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
+        // Start a new game with new player
         //game.player.reset();
     }
 
