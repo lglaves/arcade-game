@@ -85,17 +85,7 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        //console.log("in updateEntities, dt = " + dt);
         game.checkCollisions();
-        //console.log('game.player.playerHit: ' + game.player.playerHit );
-        // if ((game.player.playerHit === true) && (game.player.playerLifes === 0)){
-        //     //game.displayGameEndScreen();
-        //     console.log("Game End");
-        // }
-        // if ((game.player.playerHit === true) && (game.player.playerLifes > 0)) {
-        //     console.log("One Life Lost");
-        //     //game.resetGame();
-        // }
     }
 
     /* This is called by the update function and loops through all of the
@@ -110,7 +100,6 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         game.player.update();
-        // this does not work here!! --> game.displayStatus();
     }
 
     /* This function initially draws the "game level", it will then call

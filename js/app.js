@@ -5,7 +5,7 @@
 // method provided for creating the grid
 var TILE_WIDTH = 101;
 var TILE_HEIGHT = 83;
-var LIFE_NUMBER = 3;
+//var LIFE_NUMBER = 3;
 
 /************************************************************************/
 // Enemies our player must avoid
@@ -47,9 +47,6 @@ var Player = function() {
     this.sprite = 'images/char-horn-girl.png';
     this.x = (TILE_WIDTH/2) * 4; // Start game with player in center of lower row
     this.y = TILE_HEIGHT*5;
-    this.playerLifes = LIFE_NUMBER;
-    this.playerPoints = 0;
-    this.playerHit = false;
 };
 
 // Update Player's position
@@ -90,8 +87,9 @@ Player.prototype.handleInput = function(key) {
 // This class requires play(), pause(), advanceLevel(), and gameOver() methods
 var Game = function() {
     this.pause = false,
+    this.gameLives = 3,
     this.gameLevel = 1,
-    this.gamePoints = 0,
+    this.gamePoints = 300,
     this.init();
     this.displayStatus();
 };
@@ -106,15 +104,10 @@ Game.prototype.init = function () {
         ];
 };
 
-// Disply Game Status
+// Display Game Status
 Game.prototype.displayStatus = function () {
-    var label = document.createElement('h3');
-    //label.setAttribute('id', 'label');
-    //var label_info = document.createTextNode("TESTING");
-    var label_info = document.createTextNode('# of Lives: ' + this.player.playerLifes + '      Game Level: ' + this.gameLevel  + '      Game Points: ' + this.gamePoints);
-    //var updated_label_info = document.createTextNode('# of Lives: ' + this.player.playerLifes + '      Game Level: ' + this.gameLevel  + '      Game Points: ' + this.gamePoints);
-    label.appendChild(label_info);
-    document.body.appendChild(label);
+    document.getElementById("score").innerHTML = '# of Lives: ' + this.gameLives + '   Game Level: ' + this.gameLevel + '   Game Points: ' + this.gamePoints;
+    document.getElementById("announce").innerHTML = "To win, move buddy to the water without bug collision.";
 };
 
 // Check for collisions
@@ -122,22 +115,19 @@ Game.prototype.displayStatus = function () {
     for (var i = 0; i < this.allEnemies.length; i++) {
          // Difference between Enemy and Player y locations is 23
          // Difference between Enemy and Player x locations must be calculated with enemy - player, due to enemies start at x = -100
-        //console.log('PLAYER: location x:' + this.player.x + ', y:' + this.player.y);
-        console.log('ENEMY ' + i + ': location x:' + this.allEnemies[i].x + ', y:' + this.allEnemies[i].y);
-        //console.log("X COLLISION Calc = " + Math.abs(this.allEnemies[i].x - this.player.x));
-        //console.log("Y COLLISION Calc = " + Math.abs(this.allEnemies[i].y - this.player.y));
+        //console.log('PLAYER: location x:' + this.player.x + ', y:' + this.player.y); // TEST
+        //console.log('ENEMY ' + i + ': location x:' + this.allEnemies[i].x + ', y:' + this.allEnemies[i].y); // TEST
+        //console.log("X COLLISION Calc = " + Math.abs(this.allEnemies[i].x - this.player.x)); // TEST
+        //console.log("Y COLLISION Calc = " + Math.abs(this.allEnemies[i].y - this.player.y)); // TEST
         if ((Math.abs(this.allEnemies[i].y - this.player.y) <= 23) && (Math.abs(this.allEnemies[i].x - this.player.x) < TILE_WIDTH)) {
-            console.log("COLLISION with bug at y: " + this.allEnemies[i].y );
+            //console.log("COLLISION with bug at y: " + this.allEnemies[i].y ); // TEST
             //game.pause = true;
             // display notice
-            this.player.playerLifes = this.player.playerLifes - 1;
+            this.gameLives--;
+            // if (this.gameLives === 0) {
+            //     document.getElementById("announce").innerHTML = "All Lives Expended:  GAME OVER!!";
+            // }
             game.displayStatus();
-            if (this.player.playerLifes === 0) {
-                console.log('game over');
-                game.pause();
-            }
-            console.log("Lives left: " + this.player.playerLifes);
-            this.playerHit = true;
         }
     }
 
@@ -145,22 +135,41 @@ Game.prototype.displayStatus = function () {
 
 // Reset the game after ???
 Game.prototype.resetGame = function() {
-  this.score = 0;
-  this.level = 0;
-  this.gameover = false;
-  this.pause = false;
-  this.player.lifes = 3;
-  this.player.reset();
-  this.player.render();
-  this.game.displayStatus ();
+    this.pause = false,
+    this.gameLives = 3,
+    this.gameLevel = 1,
+    this.gamePoints = 300,
+    this.init();
+    this.displayStatus();
+    document.getElementById("announce").innerHTML = "Highest score:  ?? !!";
 };
 
 // If player wins round by reaching water safely, add points, update stats, and return to home base
 Game.prototype.update = function () {
-     if (this.player.getsHome === true) {
-         this.player.playerPoints += 50;
-         console.log ('Reached water, points = ' + this.player.playerPoints);
+    console.log("IN GAME UPDATE");
+    // Player Reached Water
+     if (this.player.y <= 0) {
+        this.pause = true;
+        this.gamePoints += 50;
+        game.displayStatus();
+        setTimeout(function() {
+        document.getElementById("announce").innerHTML = "You Reached Water Safely:  Extra 50 Points!!";
+        this.player.x = (TILE_WIDTH/2) * 4; // Return to start place
+        this.player.y = TILE_HEIGHT*5;
+        this.pause = false;
+        }.bind(this), 1000);
+        document.getElementById("announce").innerHTML = "500 points advances to next level";
      }
+     // Player crashed into bug
+
+    // Player used up all lifes
+    if (this.gameLives === 0) {
+        this.resetGame();
+        document.getElementById("announce").innerHTML = "All Lives Expended:  GAME OVER!!";
+
+    }
+
+     // Player advanced to next level
 
 };
 
