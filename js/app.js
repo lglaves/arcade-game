@@ -90,6 +90,7 @@ var Game = function() {
     this.gameLives = 3,
     this.gameLevel = 1,
     this.gamePoints = 300,
+    this.collision = false;
     this.init();
     this.displayStatus();
 };
@@ -107,7 +108,7 @@ Game.prototype.init = function () {
 // Display Game Status
 Game.prototype.displayStatus = function () {
     document.getElementById("score").innerHTML = '# of Lives: ' + this.gameLives + '   Game Level: ' + this.gameLevel + '   Game Points: ' + this.gamePoints;
-    document.getElementById("announce").innerHTML = "To win, move buddy to the water without bug collision.";
+    //document.getElementById("announce").innerHTML = "To win, move buddy to the water without bug collision.";
 };
 
 // Check for collisions
@@ -123,11 +124,11 @@ Game.prototype.displayStatus = function () {
             //console.log("COLLISION with bug at y: " + this.allEnemies[i].y ); // TEST
             //game.pause = true;
             // display notice
-            this.gameLives--;
-            // if (this.gameLives === 0) {
-            //     document.getElementById("announce").innerHTML = "All Lives Expended:  GAME OVER!!";
-            // }
+
+            //this.gameLives = this.gameLives - 1;
             game.displayStatus();
+            this.collision = true;
+            return;
         }
     }
 
@@ -135,18 +136,17 @@ Game.prototype.displayStatus = function () {
 
 // Reset the game after ???
 Game.prototype.resetGame = function() {
-    this.pause = false,
-    this.gameLives = 3,
-    this.gameLevel = 1,
-    this.gamePoints = 300,
-    this.init();
-    this.displayStatus();
-    document.getElementById("announce").innerHTML = "Highest score:  ?? !!";
+    // this.pause = false,
+    // this.gameLives = 3,
+    // this.gameLevel = 1,
+    // this.gamePoints = 300,
+    // this.init();
+    // this.displayStatus();
+    // document.getElementById("announce").innerHTML = "Highest score:  ?? !!";
 };
 
 // If player wins round by reaching water safely, add points, update stats, and return to home base
 Game.prototype.update = function () {
-    console.log("IN GAME UPDATE");
     // Player Reached Water
      if (this.player.y <= 0) {
         this.pause = true;
@@ -161,12 +161,49 @@ Game.prototype.update = function () {
         document.getElementById("announce").innerHTML = "500 points advances to next level";
      }
      // Player crashed into bug
+     console.log("this.collision = " + this.collision);
+     if (this.collision === true) {
+        this.pause = true;
+        this.gamePoints = this.gamePoints - 50;
+        game.displayStatus();
+        setTimeout(function() {
+        document.getElementById("announce").innerHTML = "BUG CRASH:  Try again!!";
+        this.player.x = (TILE_WIDTH/2) * 4; // Return to start place
+        this.player.y = TILE_HEIGHT*5;
+        this.pause = false;
+        }.bind(this), 1000);
+        this.collision = false;
+     }
+
+     // Update Lives
+     if (this.gamePoints < 50) {
+        this.gameLives = 0;
+     }
+     if ( (this.gamePoints >= 100)  && (this.gamePoints < 200) ) {
+        this.gameLives = 1;
+     }
+     if ( (this.gamePoints >= 200) && (this.gamePoints < 300) ) {
+        this.gameLives = 2;
+     }
+     if ( (this.gamePoints >= 300) && (this.gamePoints < 400) ) {
+        this.gameLives = 3;
+     }
+     if (this.gamePoints >= 400) {
+        this.gameLives = 4;
+        this.gameLevel = 2;
+        document.getElementById("announce").innerHTML = "Good Job! New Game Level!!";
+     }
+     game.displayStatus();
 
     // Player used up all lifes
     if (this.gameLives === 0) {
-        this.resetGame();
+        //console.log("gameLives = "+ this.gameLives);
+        setTimeout(function() {
         document.getElementById("announce").innerHTML = "All Lives Expended:  GAME OVER!!";
-
+        this.player.x = (TILE_WIDTH/2) * 4; // Return to start place
+        this.player.y = TILE_HEIGHT*5;
+        this.pause = false;
+        }.bind(this), 1000);
     }
 
      // Player advanced to next level
