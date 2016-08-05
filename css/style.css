@@ -53,7 +53,9 @@ h3 {
   white-space: pre;
 }
 
+
 /* Blink */
+/*  animation-name animation-duration animation-iteration-count animation-timing-function animation-direction */
 .blink {
   -webkit-animation: blink 2s linear infinite;
   -moz-animation: blink 2s linear infinite;

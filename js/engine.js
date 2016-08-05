@@ -45,11 +45,18 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
-        /* If game is paused then do not updated and cease rendering */
+
+        /* If game first initializing, render grid and player, then pause */
+        if (INIT_GAME) {
+            render();
+            game.pause = true;
+        }
+
+        /* If game is paused then do not update and cease rendering */
         if (game.pause === false) {
             update(dt);
-            game.update();
             render();
+            game.update();
         }
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -84,6 +91,8 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
+        // Todo
+        // On Start of Game, halt the entities movement until click to play!  lbg
         updateEntities(dt);
         game.checkCollisions();
     }
@@ -117,7 +126,7 @@ var Engine = (function(global) {
                 'images/stone-block.png',   // Row 1 of 3 of stone
                 'images/stone-block.png',   // Row 2 of 3 of stone
                 'images/stone-block.png',   // Row 3 of 3 of stone
-                'images/grass-block.png',   // Row 1 of 2 of grass
+                'images/stone-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
             numRows = 6,
