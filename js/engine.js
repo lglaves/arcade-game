@@ -58,6 +58,7 @@ var Engine = (function(global) {
             render();
             game.update();
         }
+
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
          */
@@ -108,7 +109,7 @@ var Engine = (function(global) {
         game.allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        game.player.update();
+        //game.player.update();  // ToDo this does nothing?
     }
 
     /* This function initially draws the "game level", it will then call
@@ -123,10 +124,10 @@ var Engine = (function(global) {
          */
         var rowImages = [
                 'images/water-block.png',   // Top row is water
-                'images/stone-block.png',   // Row 1 of 3 of stone
-                'images/stone-block.png',   // Row 2 of 3 of stone
-                'images/stone-block.png',   // Row 3 of 3 of stone
-                'images/stone-block.png',   // Row 1 of 2 of grass
+                'images/stone-block.png',   // Row 1 of 4 of stone
+                'images/stone-block.png',   // Row 2 of 4 of stone
+                'images/stone-block.png',   // Row 3 of 4 of stone
+                'images/stone-block.png',   // Row 4 of 4 of stone
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
             numRows = 6,
@@ -151,6 +152,13 @@ var Engine = (function(global) {
         }
 
         renderEntities();
+
+        /* If game over, display status and hide the game board */
+        if (END_GAME) {
+          ctx.fillStyle = "black";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          game.endGame();
+        }
     }
 
     /* This function is called by the render function and is called on each game

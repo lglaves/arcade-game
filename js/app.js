@@ -8,6 +8,7 @@
 var TILE_WIDTH = 101;
 var TILE_HEIGHT = 83;
 var INIT_GAME = true;
+var END_GAME = false;
 /************************************************************************/
  // Create Enemies our player must avoid
 var Enemy = function(x,y,speed) {
@@ -56,18 +57,18 @@ var Player = function() {
         heart: new Audio('audio/heart.wav'),
         water: new Audio('audio/water.wav'),
         gameOver: new Audio('audio/gameOver.wav')
-    }
+    };
 };
 
 // Update Player's position
-Player.prototype.update = function() {
-    // Send player back to start if it reaches the water
-    if (this.y <= 0) {
-        //this.y = TILE_HEIGHT * 5; // reset to grass
-        this.playerWins += 1;
-        console.log ('Reached water!!!');
-    }
-};
+// Player.prototype.update = function() {
+//     // Send player back to start if it reaches the water
+//     if (this.y <= 0) {
+//         //this.y = TILE_HEIGHT * 5; // reset to grass
+//         this.playerWins += 1;
+//         console.log ('Reached water!!!');
+//     }
+// };
 
 // Draw the player on the screen, required method for game
 Player.prototype.render = function() {
@@ -123,7 +124,7 @@ var Game = function() {
     this.gameLives = 3,
     this.gameLevel = 1,
     this.gamePoints = 300,
-    this.collision = false;
+    this.collision = false,
     this.init();
     this.displayStatus();
 };
@@ -173,7 +174,7 @@ Game.prototype.checkCollisions = function() {
 // Update player lives, points and game level
 // Changes occur when player reached water, collided with bug, or used up all lives
 Game.prototype.update = function () {
-    // Player Reached Water
+    // Player Reached Water - Win Points
      if (this.player.y <= 0) {
          this.player.playSound('water');
         this.pause = true;
@@ -188,7 +189,7 @@ Game.prototype.update = function () {
         document.getElementById("announce").innerHTML = "500 points advances to next level";
      }
 
-     // Player crashed into bug
+     // Player crashed into bug - Lose Points
      if (this.collision === true) {
          this.player.playSound('bug');
          this.pause = true;
@@ -203,7 +204,7 @@ Game.prototype.update = function () {
          this.collision = false;
      }
 
-     // Update Lives
+     // Update Lives and Points
      if (this.gamePoints < 50) {
         this.gameLives = 0;
      }
@@ -217,6 +218,7 @@ Game.prototype.update = function () {
         this.gameLives = 3;
      }
 
+     // ToDo add second level play
      // Player advanced to next level
      if (this.gamePoints >= 400) {
         this.gameLives = 4;
@@ -227,22 +229,22 @@ Game.prototype.update = function () {
      // Update Score Display
      game.displayStatus();
 
-    // Todo we are not reaching here!!!
-    // Player used up all lives
+    // Game End - Player used up all lives
     if (this.gameLives === 0 || this.gamePoints === 0) {
         //alert("game over");
         this.player.playSound('gameOver');
         document.getElementById("announce").innerHTML = "All Lives Expended:  GAME OVER!!";
-        // Todo reset game with a new screen, etc.!!
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        //playing = false;
-        // Wait 1 sec, then do this
+        END_GAME = true;  // This triggers black screen
+        // Wait 10 sec, then rest player and allow play again
         // setTimeout(function() {
-        //     this.player.x = (TILE_WIDTH/2) * 4; // Return to start place
-        //     this.player.y = TILE_HEIGHT*5;
-        //     INIT_GAME = true;
-        // }.bind(this), 1000);
+        //     // var INIT_GAME = true;
+        //     // var END_GAME = false;
+        //     alert("Start Game Over");
+        //     game = new Game();
+        //     // this.player.x = (TILE_WIDTH/2) * 4; // Return to start place
+        //     // this.player.y = TILE_HEIGHT*5;
+        //     // INIT_GAME = true;
+        // }.bind(this), 500);
     }
 };
 
@@ -252,15 +254,22 @@ function startGame() {
     document.getElementById("startButton").disabled = true;
     game.pause = false;  // Release paused initial game screen
     INIT_GAME = false;  // This tells the engine to begin playing game
+}
 
+function endGame() {
+    // Enable the Play Game button
+    document.getElementById("startButton").disabled = false;
+    alert("is play game enabled?");
+    game.pause = true;
+    INIT_GAME = true;
 
-};
+}
 
 // Returns a random integer between min (included) and max (included)
 // Using Math.round() will give you a non-uniform distribution!
 function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
-};
+}
 
 
 // This listens for key presses and sends the keys to your
@@ -280,5 +289,3 @@ function getRandomIntInclusive(min, max) {
 // Game constructor
 // -----------------------------------------------
 var game = new Game();
-
-
