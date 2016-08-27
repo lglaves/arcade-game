@@ -15,6 +15,7 @@
  */
 
 var Engine = (function(global) {
+    'use strict';
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
@@ -46,13 +47,15 @@ var Engine = (function(global) {
          * our update function since it may be used for smooth animation.
          */
 
-        /* If game first initializing, render grid and player, then pause */
+        /* If game first initializing, render grid and player, then pause
+         * awaiting start button click */
         if (INIT_GAME) {
             render();
             game.pause = true;
         }
 
-        /* If game is paused then do not update and cease rendering */
+        /* When game is paused do not update and cease rendering, otherwise
+         * when game is NOT paused, update and render */
         if (game.pause === false) {
             update(dt);
             render();
@@ -92,8 +95,6 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
-        // Todo
-        // On Start of Game, halt the entities movement until click to play!  lbg
         updateEntities(dt);
         game.checkCollisions();
     }
@@ -153,11 +154,16 @@ var Engine = (function(global) {
 
         renderEntities();
 
-        /* If game over, display status and hide the game board */
+        /* If game over, render black screen, pause 5 seconds to display results, then call resetGame */
         if (END_GAME) {
-          ctx.fillStyle = "black";
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          game.endGame();
+            game.playSound('gameOver');
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            document.getElementById("countdown").style.visibility = "hidden";
+            setTimeout(function() {
+                game.resetGame();
+                document.getElementById("announce").innerHTML = "Click Play Game Button to play again";
+            }.bind(this), 5000);
         }
     }
 

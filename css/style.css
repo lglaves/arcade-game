@@ -8,9 +8,14 @@ body {
 
 }
 
-h2{
+h2 {
     font-size: 3em;
     color: white;
+}
+
+.timer {
+  font-size: 3em;
+  color: white;
 }
 
 .btn-custom {
