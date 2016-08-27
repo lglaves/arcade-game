@@ -9,6 +9,8 @@ var TILE_HEIGHT = 83;
 var INIT_GAME = true;
 var END_GAME = false;
 var TIME_OVER = false;
+var bestScore = 0;
+/************************************************************************/
 /************************************************************************/
  // Create Enemies our player must avoid
 var Enemy = function(x,y,speed) {
@@ -159,6 +161,11 @@ Game.prototype.checkCollisions = function() {
 // Changes occur when player reached water, collided with bug, or used up all lives
 Game.prototype.update = function () {
 
+    console.log('this.gamePoints = ' + this.gamePoints);
+    if (this.gamePoints > bestScore) {
+        bestScore = this.gamePoints;
+    }
+
     // Player Reached Water - Win Points
      if (this.player.y <= 0) {
         game.playSound('water');
@@ -222,16 +229,56 @@ Game.prototype.update = function () {
         }
     //}
 
- } ;
+// localStorage detection
+    function supportsLocalStorage() {
+        return typeof(Storage)!== 'undefined';
+    }
+
+// Run the support check
+    if (!supportsLocalStorage()) {
+        // No HTML5 localStorage Support
+        console.log("No localStorage Support");
+    } else {
+        // HTML5 localStorage Support
+        console.log("Yes localStorage Support");
+        // Try this
+        try {
+            // Set the local storage variable
+            localStorage.setItem('saveScore', bestScore);
+        } catch (e) {
+            // If any errors, catch and alert the user
+            if (e == QUOTA_EXCEEDED_ERR) {
+                alert('Quota exceeded!');
+            }
+        }
+
+        // If there is data available
+        if (localStorage.getItem('saveScore')) {
+            // Retrieve the item
+            console.log('high score saved in local storage: ' + localStorage.getItem("saveScore"));
+        }
+    }
+
+// Store Best Score for Display
+// var bestScore = 0;
+// if (this.gamePoints > bestScore) {
+//     bestScore = gamePoints;
+//     localStorage.setItem("saveScore", bestScore);
+//     //document.getElementById("highestScore").innerHTML= "Your Best Score: " + localStorage.getItem("saveScore");
+//     console.log(localStorage.getItem("saveScore"));
+// }
+
+ } ;  // update()
 
 // Start Game on Button Click
 function startGame() {
         // Disable the button while playing
         document.getElementById("startButton").disabled = true;
+        //document.getElementById("startButton").style.visibility = "hidden";
         game.pause = false; // Release paused initial game screen
         INIT_GAME  =   false;  // This tells the engine to begin playing game
         countdown('countdown', 0, 30);  // Start countdown timer
-        document.getElementById("countdown").innerHTML = "Countdown Timer: ";
+        //document.getElementById("countdown").innerHTML = "Countdown Timer: " + countdown;
 }
 
 // Enable the startButton for a new game
@@ -244,8 +291,14 @@ Game.prototype.resetGame = function()  {
     game.init();
     game = new Game();
     document.getElementById("startButton").disabled = false;
+    //document.getElementById("startButton").style.visibility = "visible";
     // Todo display stats
     // game.pause = true;
+}
+
+// Quit Game on Button Click
+function quitGame() {
+    END_GAME = true;
 }
 
 // Returns a random integer between min (included) and max (included)

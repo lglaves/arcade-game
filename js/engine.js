@@ -163,7 +163,7 @@ var Engine = (function(global) {
             setTimeout(function() {
                 game.resetGame();
                 document.getElementById("announce").innerHTML = "Click Play Game Button to play again";
-            }.bind(this), 5000);
+            }.bind(this), 4000);
         }
     }
 
