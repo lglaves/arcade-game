@@ -159,7 +159,6 @@ var Engine = (function(global) {
             game.playSound('gameOver');
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            document.getElementById("countdown").style.visibility = "hidden";
             setTimeout(function() {
                 game.resetGame();
                 document.getElementById("announce").innerHTML = "Click Play Game Button to try again";

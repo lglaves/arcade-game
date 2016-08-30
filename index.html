@@ -28,7 +28,7 @@
         <button type="button" class="btn btn-lg btn-custom" data-toggle="modal" data-target="#instructsModal">How to Play</button>
         <!--<button id="quitButton" type="button" class="btn btn-lg btn-custom" onclick="quitGame()">Quit Game</button>-->
         <button id="quitButton" type="button" class="btn btn-lg btn-custom" data-toggle="modal" data-target="#quitModal">Quit Game</button>
-        <button id="startButton" type="button" class="btn btn-lg btn-custom" onclick="startGame()">Play Game</button>
+        <button id="startButton" type="button" class="btn btn-lg btn-custom" onclick="game.playGame()">Play Game</button>
         <!-- Todo implement quit game button -->
     </div>
 
@@ -74,7 +74,7 @@
                 </div>
                 <div class="modal-footer">
                     <span>
-                        <button type="button" class="btn btn-lg btn-custom" data-dismiss="modal" onclick="quitGame()">Yes</button>
+                        <button type="button" class="btn btn-lg btn-custom" data-dismiss="modal" onclick="game.quitGame()">Yes</button>
                         <button type="button" class="btn btn-lg btn-custom" data-dismiss="modal">No</button>
                     </span>
                 </div>

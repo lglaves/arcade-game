@@ -9,7 +9,7 @@ var TILE_HEIGHT = 83;
 var INIT_GAME = true;  // When true, setup and display start screen (when false go ahead and run game engine)
 var END_GAME = false;
 var TIME_OVER = false;
-var bestScore = 100;  // Player starts with 100 gamePoints
+var bestScore = 0;  // Player starts with 100 gamePoints
 /************************************************************************/
 /************************************************************************/
  // Create Enemies our player must avoid
@@ -102,10 +102,10 @@ var Game = function() {
 Game.prototype.init = function () {
     this.player = new Player();
     this.allEnemies = [
-        new Enemy(-100, 60, getRandomIntInclusive(100, 200)),
-        new Enemy(-100, 60+TILE_HEIGHT, getRandomIntInclusive(200, 400)),
-        new Enemy(-100, 60+(2*TILE_HEIGHT), getRandomIntInclusive(100, 300)),
-        new Enemy(-100, 60+(3*TILE_HEIGHT), getRandomIntInclusive(200, 400))
+        new Enemy(-100, 60, this.getRandomIntInclusive(100, 200)),
+        new Enemy(-100, 60+TILE_HEIGHT, this.getRandomIntInclusive(200, 400)),
+        new Enemy(-100, 60+(2*TILE_HEIGHT), this.getRandomIntInclusive(100, 300)),
+        new Enemy(-100, 60+(3*TILE_HEIGHT), this.getRandomIntInclusive(200, 400))
         ];
 };
 
@@ -161,15 +161,13 @@ Game.prototype.checkCollisions = function() {
 // Changes occur when player reached water, collided with bug, or used up all lives
 Game.prototype.update = function () {
 
-
-
     // console.log('this.gamePoints = ' + this.gamePoints);
     if (this.gamePoints > bestScore) {
         bestScore = this.gamePoints;
         window.localStorage.setItem("saveScore", bestScore);
     }
 
-    window.localStorage.setItem('saveScore', "600");
+    //window.localStorage.setItem('saveScore', "600");
     document.getElementById("personalBest").innerHTML = "Your Highest Score: " + window.localStorage.getItem("saveScore");
 
     // Player Reached Water - Win Points
@@ -228,15 +226,15 @@ Game.prototype.update = function () {
      game.displayStatus();
 
     // Game End - Player used up all lives
-    if (this.gamePoints <= 0 || this.gameLives <= 0) {
+    if (this.gamePoints <= 0) {
         END_GAME = true;
+        document.getElementById("countdown").style.visibility = "hidden";
         document.getElementById("announce").innerHTML = "Game Over: Lost all Lives";
     }
 
     if (TIME_OVER) {
         END_GAME = true;
-        // document.getElementById("countdown").style.visibility = "hidden";
-        document.getElementById("announce").innerHTML = "Game Over: Time is Up";
+        // Timer will show "Time is Up!"
     }
 
 // Local Storage Detection - Keep Record of Highest Score
@@ -271,23 +269,26 @@ Game.prototype.update = function () {
  } ;  // update()
 
 // Start Game on Button Click
-function startGame() {
-        // Disable the button while playing
+//function playGame() {
+Game.prototype.playGame = function() {
         document.getElementById("startButton").disabled = true;
-        //document.getElementById("startButton").style.visibility = "hidden";
         game.pause = false; // Release paused initial game screen
         INIT_GAME  =   false;  // When false, ok to run game engine
-        countdownTimer('countdown', 0, 20);  // Start countdown timer
 
+        countdownTimer('countdown', 0, 20);  // Start countdown timer
+        document.getElementById("countdown").style.visibility = "visible";
 }
 
-// Enable the startButton for a new game in the same browser session
+// resetGame is used by engine.js
+// to initialize a new game and re-enable the play game button
 // Retain Persistent highest score and display statistics
 Game.prototype.resetGame = function()  {
+    INIT_GAME = true;  // When true, setup and display start screen (when false go ahead and run game engine)
     END_GAME = false;
-    INIT_GAME = true;
     TIME_OVER = false;
     //location.reload();
+    this.gameLives = 1;
+    this.gamePoints = 100;
     game.init();
     game = new Game();
     document.getElementById("startButton").disabled = false;
@@ -295,19 +296,20 @@ Game.prototype.resetGame = function()  {
 }
 
 // Quit Game on Button Click
-function quitGame() {
+Game.prototype.quitGame = function() {
     END_GAME = true;
     window.close();
 }
 
 // Returns a random integer between min (included) and max (included)
 // Using Math.round() will give you a non-uniform distribution!
-function getRandomIntInclusive(min, max) {
+Game.prototype. getRandomIntInclusive = function(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 // Countdown Timer (this game will be timed)
 function countdownTimer(elementName, minutes, seconds) {
+//Game.prototype.countdownTimer = function(elementName, minutes, seconds) {
     var element, endTime, hours, mins, msLeft, time;
 
     function twoDigits(n) {
@@ -331,6 +333,7 @@ function countdownTimer(elementName, minutes, seconds) {
     element = document.getElementById(elementName);
     endTime = (+new Date) + 1000 * (60*minutes + seconds) + 500;
     updateTimer();
+
 }
 
 
