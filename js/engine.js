@@ -162,7 +162,7 @@ var Engine = (function(global) {
             document.getElementById("countdown").style.visibility = "hidden";
             setTimeout(function() {
                 game.resetGame();
-                document.getElementById("announce").innerHTML = "Click Play Game Button to play again";
+                document.getElementById("announce").innerHTML = "Click Play Game Button to try again";
             }.bind(this), 4000);
         }
     }

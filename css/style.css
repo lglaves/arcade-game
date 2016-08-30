@@ -62,11 +62,11 @@ h3 {
 /* Blink */
 /*  animation-name animation-duration animation-iteration-count animation-timing-function animation-direction */
 .blink {
-  -webkit-animation: blink 2s linear infinite;
-  -moz-animation: blink 2s linear infinite;
-  -ms-animation: blink 2s linear infinite;
-  -o-animation: blink 2s linear infinite;
-   animation: blink 2s linear infinite;
+  -webkit-animation: blink 4s linear infinite;
+  -moz-animation: blink 4s linear infinite;
+  -ms-animation: blink 4s linear infinite;
+  -o-animation: blink 4s linear infinite;
+   animation: blink 4s linear infinite;
 }
 @-webkit-keyframes blink {
   0% { opacity: 1; }
