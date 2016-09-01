@@ -9,7 +9,11 @@ var TILE_HEIGHT = 83;
 var INIT_GAME = true;  // When true, setup and display start screen (when false go ahead and run game engine)
 var END_GAME = false;
 var TIME_OVER = false;
-var bestScore = 0;  // Player starts with 100 gamePoints
+// Init Game Values
+var bestScore = 100;
+var GAME_LIVES = 1;
+var GAME_POINTS = 400;
+var GAME_LEVEL = 1;
 /************************************************************************/
 /************************************************************************/
  // Create Enemies our player must avoid
@@ -42,6 +46,18 @@ Enemy.prototype.update = function(dt) {
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+/************************************************************************/
+// Create Other Game Items
+var Item = function (x, y, sprite) {
+    this.x = x;
+    this.y = y;
+    this.sprite = 'images/' + sprite + '.png';
+};
+
+Item.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
@@ -82,31 +98,55 @@ Player.prototype.handleInput = function(key) {
 // Create Game (template definition of object's properties and methods)
 var Game = function() {
     this.pause = false,
-    this.gameLives = 1, // 3,
-    this.gameLevel = 1,
-    this.gamePoints = 100,  // 300,
+    this.gameLives = 4,
+    this.gameLevel = 2,
+    this.gamePoints = 400; // for testing
     this.collision = false,
     this.init(),
     this.displayStatus();
+    this.saveScore();
     this.audio = {
         muted: false,
         bug: new Audio('audio/bug.wav'),
         gem: new Audio('audio/gem.wav'),
         heart: new Audio('audio/heart.wav'),
         water: new Audio('audio/water.wav'),
-        gameOver: new Audio('audio/game-over03.wav')
+        gameOver: new Audio('audio/game-over03.wav'),
+        nextLevel: new Audio('audio/level-up.wav')
     };
 };
 
 // Initialize new game with player and enemies
 Game.prototype.init = function () {
-    this.player = new Player();
-    this.allEnemies = [
-        new Enemy(-100, 60, this.getRandomIntInclusive(100, 200)),
-        new Enemy(-100, 60+TILE_HEIGHT, this.getRandomIntInclusive(200, 400)),
-        new Enemy(-100, 60+(2*TILE_HEIGHT), this.getRandomIntInclusive(100, 300)),
-        new Enemy(-100, 60+(3*TILE_HEIGHT), this.getRandomIntInclusive(200, 400))
+    if (this.gameLevel === 1) {
+        this.player = new Player();
+        this.allEnemies = [
+            new Enemy(-100, 60, this.getRandomIntInclusive(100, 200)),
+            new Enemy(-100, 60 + TILE_HEIGHT, this.getRandomIntInclusive(200, 400)),
+            new Enemy(-100, 60 + (2 * TILE_HEIGHT), this.getRandomIntInclusive(100, 300)),
+            new Enemy(-100, 60 + (3 * TILE_HEIGHT), this.getRandomIntInclusive(200, 400))
         ];
+    }
+
+    if (this.gameLevel === 2) {
+        this.player = new Player();
+        this.allEnemies = [
+            new Enemy(-100, 60, this.getRandomIntInclusive(100, 200)),
+            new Enemy(-60, 60, this.getRandomIntInclusive(100, 200)),
+            new Enemy(-100, 60 + TILE_HEIGHT, this.getRandomIntInclusive(200, 400)),
+            new Enemy(-60, 60 + TILE_HEIGHT, this.getRandomIntInclusive(200, 400)),
+            new Enemy(-100, 60 + (2 * TILE_HEIGHT), this.getRandomIntInclusive(100, 300)),
+            new Enemy(-60, 60 + (2 * TILE_HEIGHT), this.getRandomIntInclusive(100, 300)),
+            new Enemy(-100, 60 + (3 * TILE_HEIGHT), this.getRandomIntInclusive(200, 400)),
+            new Enemy(-60, 60 + (3 * TILE_HEIGHT), this.getRandomIntInclusive(200, 400))
+        ];
+        this.allItems = [
+            new Item(this.getRandomIntInclusive(0, 4)*TILE_WIDTH, 60, 'Heart'),
+            new Item(this.getRandomIntInclusive(0, 4)*TILE_WIDTH, 60 + TILE_HEIGHT, 'GemBlue'),
+            new Item(this.getRandomIntInclusive(0, 4)*TILE_WIDTH, 60 + (2 * TILE_HEIGHT), 'GemGreen'),
+            new Item(this.getRandomIntInclusive(0, 4)*TILE_WIDTH, 60 + (3 * TILE_HEIGHT), 'GemOrange')
+        ];
+    }
 };
 
 // Play sound depends on what just happened
@@ -129,13 +169,20 @@ Game.prototype.playSound = function(sound) {
             case 'gameOver':
                 this.audio.gameOver.play();
                 break;
+            case 'nextLevel':
+                this.audio.nextLevel.play();
+                break;
         }
     }
 };
 
-// Display Game Status
+// Display Game Status and Best Score so far
 Game.prototype.displayStatus = function () {
     document.getElementById("score").innerHTML = '# of Lives: ' + this.gameLives + '   Game Level: ' + this.gameLevel + '   Game Points: ' + this.gamePoints;
+    //game.saveScore();
+    if (!INIT_GAME) {
+        document.getElementById("personalBest").innerHTML = "Your Highest Score: " + window.localStorage.getItem("saveScore");
+    }
 };
 
 // Check for collisions
@@ -161,27 +208,33 @@ Game.prototype.checkCollisions = function() {
 // Changes occur when player reached water, collided with bug, or used up all lives
 Game.prototype.update = function () {
 
-    // console.log('this.gamePoints = ' + this.gamePoints);
-    if (this.gamePoints > bestScore) {
-        bestScore = this.gamePoints;
-        window.localStorage.setItem("saveScore", bestScore);
-    }
-
-    //window.localStorage.setItem('saveScore', "600");
-    document.getElementById("personalBest").innerHTML = "Your Highest Score: " + window.localStorage.getItem("saveScore");
-
     // Player Reached Water - Win Points
      if (this.player.y <= 0) {
         game.playSound('water');
         this.pause = true;
         this.gamePoints += 50;
         game.displayStatus();
-        setTimeout(function() {
-            document.getElementById("announce").innerHTML = "You Reached Water Safely:  Extra 50 Points!!";
-            this.player.x = (TILE_WIDTH/2) * 4; // Return to start place
-            this.player.y = TILE_HEIGHT*5;
-            this.pause = false;
-        }.bind(this), 1000);
+         if (this.gamePoints >= 400) {
+             game.playSound('nextLevel');
+             this.gameLevel = 2;
+             document.getElementById("countdown").style.visibility = "hidden";
+             document.getElementById("announce").innerHTML = "Good Job! New Game Level!!";
+             ctx.fillStyle = "black";
+             ctx.fillRect(0, 0, canvas.width, canvas.height);
+             setTimeout(function() {
+                 game.saveScore();
+                 game.resetGame();
+             }.bind(this), 2000);
+         }
+         else {
+            setTimeout(function() {
+                document.getElementById("announce").innerHTML = "You Reached Water Safely:  Extra 50 Points!!";
+                game.saveScore();
+                this.player.x = (TILE_WIDTH/2) * 4; // Return to start place
+                this.player.y = TILE_HEIGHT*5;
+                this.pause = false;
+            }.bind(this), 1000);
+         }
      }
 
      // Player crashed into bug - Lose Points
@@ -213,14 +266,10 @@ Game.prototype.update = function () {
      else if ( (this.gamePoints >= 300) && (this.gamePoints < 400) ) {
         this.gameLives = 3;
      }
-
-     // ToDo add second level play
-     // Player advanced to next level
-     if (this.gamePoints >= 400) {
-        this.gameLives = 4;
+    if (this.gamePoints >= 400) {
         this.gameLevel = 2;
-        document.getElementById("announce").innerHTML = "Good Job! New Game Level!!";
-     }
+        this.gameLives = 4;
+    }
 
      // Update Score Display
      game.displayStatus();
@@ -235,9 +284,19 @@ Game.prototype.update = function () {
     if (TIME_OVER) {
         END_GAME = true;
         // Timer will show "Time is Up!"
+        document.getElementById("announce").style.visibility = "hidden";
     }
 
-// Local Storage Detection - Keep Record of Highest Score
+} ;  // update()
+
+// Save highest score for local storage
+Game.prototype.saveScore = function () {
+
+    if (this.gamePoints > bestScore) {
+        bestScore = this.gamePoints;
+    }
+
+    // Check whether local storage is supported
     function supportsLocalStorage() {
         return typeof(Storage)!== 'undefined';
     }
@@ -247,35 +306,39 @@ Game.prototype.update = function () {
         console.log("No localStorage Support");
     } else {
         // HTML5 localStorage Support
-        // console.log("Yes localStorage Support");
         // Try this
         try {
             // Set the local storage variable
-            localStorage.setItem('saveScore', bestScore);
+            if (!localStorage.getItem('saveScore')) {
+                localStorage.setItem('saveScore', bestScore);
+            }
+            // Update the local storage variable
+            else if (bestScore > localStorage.getItem('saveScore')) {
+                localStorage.setItem('saveScore', bestScore);
+            }
         } catch (e) {
             // If any errors, catch and alert the user
             if (e == QUOTA_EXCEEDED_ERR) {
                 alert('Local Storage Quota Exceeded!');
             }
         }
-
-        // If there is data available
-        if (localStorage.getItem('saveScore')) {
-            // Retrieve the item
-             console.log('high score saved in local storage: ' + window.localStorage.getItem("saveScore"));
-        }
     }
+}
 
- } ;  // update()
+
 
 // Start Game on Button Click
-//function playGame() {
 Game.prototype.playGame = function() {
         document.getElementById("startButton").disabled = true;
         game.pause = false; // Release paused initial game screen
         INIT_GAME  =   false;  // When false, ok to run game engine
-
-        countdownTimer('countdown', 0, 20);  // Start countdown timer
+        //var gameTimer = new countdownTimer('countdown', 0, 30);  // Start countdown timer
+        if (this.gameLevel === 1) {
+            countdownTimer('countdown', 0, 30);
+        }
+        else if (this.gameLevel === 2) {
+            countdownTimer('countdown', 1, 0);
+        }
         document.getElementById("countdown").style.visibility = "visible";
 }
 
@@ -286,11 +349,19 @@ Game.prototype.resetGame = function()  {
     INIT_GAME = true;  // When true, setup and display start screen (when false go ahead and run game engine)
     END_GAME = false;
     TIME_OVER = false;
-    //location.reload();
-    this.gameLives = 1;
-    this.gamePoints = 100;
-    game.init();
-    game = new Game();
+    location.reload();
+    if (this.gameLevel === 1) {
+        this.gameLives = 1;
+        this.gamePoints = 300; // for testing
+        countdownTimer('countdown', 0, 30);
+    }
+    if (this.gameLevel === 2) {
+        this.gameLives = 4;
+        this.gamePoints = 400;
+        countdownTimer('countdown', 1, 0);
+        document.getElementById("announce").innerHTML = "Click Play Game Button to Play Level 2";
+    }
+    //game.init();
     document.getElementById("startButton").disabled = false;
     //document.getElementById("startButton").style.visibility = "visible";
 }
@@ -309,8 +380,7 @@ Game.prototype. getRandomIntInclusive = function(min, max) {
 
 // Countdown Timer (this game will be timed)
 function countdownTimer(elementName, minutes, seconds) {
-//Game.prototype.countdownTimer = function(elementName, minutes, seconds) {
-    var element, endTime, hours, mins, msLeft, time;
+    var element, endTime, hours, mins, msLeft, time, timer;
 
     function twoDigits(n) {
         return (n <= 9 ? "0" + n : n);
@@ -326,7 +396,7 @@ function countdownTimer(elementName, minutes, seconds) {
             hours = time.getUTCHours();
             mins = time.getUTCMinutes();
             element.innerHTML = "Time Remaining: " + (hours ? hours + ':' + twoDigits(mins) : mins) + ':' + twoDigits(time.getUTCSeconds());
-            setTimeout( updateTimer, time.getUTCMilliseconds() + 500 );
+            timer = setTimeout( updateTimer, time.getUTCMilliseconds() + 500 );
         }
     }
 
@@ -334,8 +404,20 @@ function countdownTimer(elementName, minutes, seconds) {
     endTime = (+new Date) + 1000 * (60*minutes + seconds) + 500;
     updateTimer();
 
-}
+    // function resetTimer() {
+    // this.resetTimer = function () {
+    //     pauseTimer();
+    //     mins = minutes;
+    //     msLeft = seconds;
+    //
+    // }
 
+    //function pauseTimer() {
+    //  this.pauseTimer = function () {
+    //     clearTimeout(timer);
+    //
+    // }
+}
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.

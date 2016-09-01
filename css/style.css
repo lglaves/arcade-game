@@ -19,6 +19,7 @@ h2 {
 }
 
 .btn-custom {
+  border-radius: 5px;
   background-color: hsl(201, 100%, 22%) !important;
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#008bd6", endColorstr="#004870");
@@ -33,22 +34,50 @@ h2 {
   color: #fff !important;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.33);
   -webkit-font-smoothing: antialiased;
-
   margin: 1em;
 }
 
+/* Modal Style */
+.modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 80%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
 .modal-header {
-  background-color: green;
+  padding: 2px 16px;
+  background-color: #5cb85c;
   border-radius: 5px 5px 0px 0px;
   color: white;
 }
 
 .modal-body {
-  background-color: #5c5cd6;
+  padding: 2px 16px;
+  background-color: white;
 }
 
 .modal-footer {
-  background-color: green;
+  padding: 2px 16px;
+  background-color: #5cb85c;
   border-radius: 0px 0px 5px 5px;
   color: white;
 }
@@ -62,11 +91,11 @@ h3 {
 /* Blink */
 /*  animation-name animation-duration animation-iteration-count animation-timing-function animation-direction */
 .blink {
-  -webkit-animation: blink 4s linear infinite;
-  -moz-animation: blink 4s linear infinite;
-  -ms-animation: blink 4s linear infinite;
-  -o-animation: blink 4s linear infinite;
-   animation: blink 4s linear infinite;
+    -webkit-animation: blink 2s linear 5;
+    -moz-animation: blink 2s linear 5;
+    -ms-animation: blink 2s linear 5;
+    -o-animation: blink 2s linear 5;
+    animation: blink 2s linear 5;
 }
 @-webkit-keyframes blink {
   0% { opacity: 1; }

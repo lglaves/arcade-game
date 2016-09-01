@@ -178,6 +178,12 @@ var Engine = (function(global) {
             enemy.render();
         });
 
+        if (game.gameLevel === 2) {
+            game.allItems.forEach(function (item) {
+                item.render();
+            });
+        }
+
         game.player.render();
     }
 
@@ -199,7 +205,11 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-horn-girl.png'
+        'images/char-horn-girl.png',
+        'images/Heart.png',
+        'images/GemBlue.png',
+        'images/GemGreen.png',
+        'images/GemOrange.png'
     ]);
     Resources.onReady(init);
 
