@@ -51,10 +51,11 @@ Enemy.prototype.render = function() {
 
 /************************************************************************/
 // Create Other Game Items
-var Item = function (x, y, sprite) {
+var Item = function (x, y, sprite, item) {
     this.x = x;
     this.y = y;
     this.sprite = 'images/' + sprite + '.png';
+    this.item = item;
 };
 
 Item.prototype.render = function () {
@@ -102,14 +103,14 @@ var Game = function() {
     this.gameLevel = 2,
     this.gamePoints = 400; // for testing
     this.collision = false,
+    this.capture = false,
     this.init(),
     this.displayStatus();
     this.saveScore();
     this.audio = {
         muted: false,
         bug: new Audio('audio/bug.wav'),
-        gem: new Audio('audio/gem.wav'),
-        heart: new Audio('audio/heart.wav'),
+        item: new Audio('audio/itemFound.wav'),
         water: new Audio('audio/water.wav'),
         gameOver: new Audio('audio/game-over03.wav'),
         nextLevel: new Audio('audio/level-up.wav')
@@ -187,21 +188,38 @@ Game.prototype.displayStatus = function () {
 
 // Check for collisions
 Game.prototype.checkCollisions = function() {
-    // Check for enemy collision
     for (var i = 0; i < this.allEnemies.length; i++) {
         // Difference between Enemy and Player y locations is 23
         // Difference between Enemy and Player x locations must be calculated with enemy - player, due to enemies start at x = -100
-        //if ((Math.abs(this.allEnemies[i].y - this.player.y) <= 23) && (Math.abs(this.allEnemies[i].x - this.player.x) < TILE_WIDTH)) {
-            if ((Math.abs(this.allEnemies[i].y - this.player.y) <= 23) && (this.player.x >= this.allEnemies[i].x) && (Math.abs(this.player.x - this.allEnemies[i].x) < TILE_WIDTH)) {
-                game.displayStatus();
-                this.collision = true;
-                return;
-            }
+        if ((Math.abs(this.allEnemies[i].y - this.player.y) <= 23) && (this.player.x >= this.allEnemies[i].x) && (Math.abs(this.player.x - this.allEnemies[i].x) < TILE_WIDTH)) {
+            game.displayStatus();
+            this.collision = true;
+            return;
         }
     }
+};
 
-    // Todo make level 2 for game
-    // Check for collision with other item
+// Check for captures
+Game.prototype.checkCaptures = function() {
+    for (var i = 0; i < this.allItems.length; i++) {
+        if ((Math.abs(this.allItems[i].y - this.player.y) <= 23) && (Math.abs(this.player.x - this.allItems[i].x) < TILE_WIDTH)) {
+            if (this.allItems[i].item === 'heart') {
+                this.gamePoints = this.gamePoints + 100;
+                document.getElementById("announce").innerHTML = "Extra Life Heart found: You gained 100 points!!";
+            }
+            else {
+                this.gamePoints = this.gamePoints + 50;
+                document.getElementById("announce").innerHTML = "Sparkly Gem found: You gained 50 points!!";
+            }
+            // Delete this item from array
+            this.allItems.splice(i, 1);
+            game.saveScore();
+            game.displayStatus();
+            this.capture = true;
+            return;
+        }
+    }
+};
 
 
 // Update player lives, points and game level
@@ -214,7 +232,8 @@ Game.prototype.update = function () {
         this.pause = true;
         this.gamePoints += 50;
         game.displayStatus();
-         if (this.gamePoints >= 400) {
+         // Transition to Level 2
+         if ((this.gameLevel === 1) && (this.gamePoints >= 400)) {
              game.playSound('nextLevel');
              this.gameLevel = 2;
              document.getElementById("countdown").style.visibility = "hidden";
@@ -226,6 +245,7 @@ Game.prototype.update = function () {
                  game.resetGame();
              }.bind(this), 2000);
          }
+         // Continue at Level 1
          else {
             setTimeout(function() {
                 document.getElementById("announce").innerHTML = "You Reached Water Safely:  Extra 50 Points!!";
@@ -253,34 +273,42 @@ Game.prototype.update = function () {
          this.collision = false;
      }
 
+     // Player captured an item - Gain Points
+    if (this.capture === true) {
+        game.playSound('itemFound');
+        this.pause = true;
+        setTimeout(function() {
+            this.player.x = (TILE_WIDTH/2) * 4; // Return to start place
+            this.player.y = TILE_HEIGHT*5;
+            this.pause = false;
+        }.bind(this), 1000);
+        this.capture = false;
+    }
+
      // Update Lives and Points
-     if (this.gamePoints < 50) {
+    if (this.gamePoints >= 100) {
+        this.gameLives = Math.floor(this.gamePoints / 100);
+    }
+    else {
+        this.gamePoints = 0;
         this.gameLives = 0;
-     }
-     else if ( (this.gamePoints >= 100)  && (this.gamePoints < 200) ) {
-        this.gameLives = 1;
-     }
-     else if ( (this.gamePoints >= 200) && (this.gamePoints < 300) ) {
-        this.gameLives = 2;
-     }
-     else if ( (this.gamePoints >= 300) && (this.gamePoints < 400) ) {
-        this.gameLives = 3;
-     }
+    }
+
     if (this.gamePoints >= 400) {
         this.gameLevel = 2;
-        this.gameLives = 4;
     }
 
      // Update Score Display
      game.displayStatus();
 
     // Game End - Player used up all lives
-    if (this.gamePoints <= 0) {
+    if (this.gamePoints < 100) {
         END_GAME = true;
         document.getElementById("countdown").style.visibility = "hidden";
         document.getElementById("announce").innerHTML = "Game Over: Lost all Lives";
     }
 
+    // Game End - Time is Up
     if (TIME_OVER) {
         END_GAME = true;
         // Timer will show "Time is Up!"
@@ -313,7 +341,7 @@ Game.prototype.saveScore = function () {
                 localStorage.setItem('saveScore', bestScore);
             }
             // Update the local storage variable
-            else if (bestScore > localStorage.getItem('saveScore')) {
+            else if (localStorage.getItem('saveScore') && (bestScore > localStorage.getItem('saveScore'))) {
                 localStorage.setItem('saveScore', bestScore);
             }
         } catch (e) {
@@ -403,20 +431,6 @@ function countdownTimer(elementName, minutes, seconds) {
     element = document.getElementById(elementName);
     endTime = (+new Date) + 1000 * (60*minutes + seconds) + 500;
     updateTimer();
-
-    // function resetTimer() {
-    // this.resetTimer = function () {
-    //     pauseTimer();
-    //     mins = minutes;
-    //     msLeft = seconds;
-    //
-    // }
-
-    //function pauseTimer() {
-    //  this.pauseTimer = function () {
-    //     clearTimeout(timer);
-    //
-    // }
 }
 
 // This listens for key presses and sends the keys to your

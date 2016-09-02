@@ -97,6 +97,9 @@ var Engine = (function(global) {
     function update(dt) {
         updateEntities(dt);
         game.checkCollisions();
+        if (game.gameLevel === 2) {
+            game.checkCaptures();
+        }
     }
 
     /* This is called by the update function and loops through all of the
