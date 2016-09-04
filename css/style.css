@@ -91,11 +91,18 @@ h3 {
 /* Blink */
 /*  animation-name animation-duration animation-iteration-count animation-timing-function animation-direction */
 .blink {
-    -webkit-animation: blink 2s linear 5;
-    -moz-animation: blink 2s linear 5;
-    -ms-animation: blink 2s linear 5;
-    -o-animation: blink 2s linear 5;
-    animation: blink 2s linear 5;
+    color: red;
+    -webkit-animation: blink 3s linear infinite;
+    -moz-animation: blink 3s linear infinite;
+    -ms-animation: blink 3s linear infinite;
+    -o-animation: blink 3s linear infinite;
+    animation: blink 3s linear infinite;
+
+    /*-webkit-animation: blink 2s linear 3;*/
+    /*-moz-animation: blink 2s linear 3;*/
+    /*-ms-animation: blink 2s linear 3;*/
+    /*-o-animation: blink 2s linear 3;*/
+    /*animation: blink 2s linear 3;*/
 }
 @-webkit-keyframes blink {
   0% { opacity: 1; }

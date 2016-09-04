@@ -51,11 +51,10 @@ Enemy.prototype.render = function() {
 
 /************************************************************************/
 // Create Other Game Items
-var Item = function (x, y, sprite, item) {
+var Item = function (x, y, sprite) {
     this.x = x;
     this.y = y;
     this.sprite = 'images/' + sprite + '.png';
-    this.item = item;
 };
 
 Item.prototype.render = function () {
@@ -101,7 +100,7 @@ var Game = function() {
     this.pause = false,
     this.gameLives = 4,
     this.gameLevel = 2,
-    this.gamePoints = 400; // for testing
+    this.gamePoints = 750; // for testing
     this.collision = false,
     this.capture = false,
     this.init(),
@@ -109,11 +108,13 @@ var Game = function() {
     this.saveScore();
     this.audio = {
         muted: false,
-        bug: new Audio('audio/bug.wav'),
-        item: new Audio('audio/itemFound.wav'),
+        bug: new Audio('audio/bug3.wav'),
+        itemFound: new Audio('audio/itemFound.wav'),
+        heart: new Audio('audio/heart.wav'),
         water: new Audio('audio/water.wav'),
         gameOver: new Audio('audio/game-over03.wav'),
-        nextLevel: new Audio('audio/level-up.wav')
+        nextLevel: new Audio('audio/level-up.wav'),
+        win: new Audio('audio/game-win.wav')
     };
 };
 
@@ -146,6 +147,8 @@ Game.prototype.init = function () {
             new Item(this.getRandomIntInclusive(0, 4)*TILE_WIDTH, 60 + TILE_HEIGHT, 'GemBlue'),
             new Item(this.getRandomIntInclusive(0, 4)*TILE_WIDTH, 60 + (2 * TILE_HEIGHT), 'GemGreen'),
             new Item(this.getRandomIntInclusive(0, 4)*TILE_WIDTH, 60 + (3 * TILE_HEIGHT), 'GemOrange')
+
+
         ];
     }
 };
@@ -161,8 +164,8 @@ Game.prototype.playSound = function(sound) {
             case 'water':
                 this.audio.water.play();
                 break;
-            case 'gem':
-                this.audio.gem.play();
+            case 'itemFound':
+                this.audio.itemFound.play();
                 break;
             case 'heart':
                 this.audio.heart.play();
@@ -172,6 +175,9 @@ Game.prototype.playSound = function(sound) {
                 break;
             case 'nextLevel':
                 this.audio.nextLevel.play();
+                break;
+            case 'win':
+                this.audio.win.play();
                 break;
         }
     }
@@ -192,8 +198,10 @@ Game.prototype.checkCollisions = function() {
         // Difference between Enemy and Player y locations is 23
         // Difference between Enemy and Player x locations must be calculated with enemy - player, due to enemies start at x = -100
         if ((Math.abs(this.allEnemies[i].y - this.player.y) <= 23) && (this.player.x >= this.allEnemies[i].x) && (Math.abs(this.player.x - this.allEnemies[i].x) < TILE_WIDTH)) {
-            game.displayStatus();
+            game.playSound('bug');
             this.collision = true;
+            this.capture = false  // prevent almost simultaneous events
+            game.displayStatus();
             return;
         }
     }
@@ -203,19 +211,26 @@ Game.prototype.checkCollisions = function() {
 Game.prototype.checkCaptures = function() {
     for (var i = 0; i < this.allItems.length; i++) {
         if ((Math.abs(this.allItems[i].y - this.player.y) <= 23) && (Math.abs(this.player.x - this.allItems[i].x) < TILE_WIDTH)) {
-            if (this.allItems[i].item === 'heart') {
+            this.capture = true;
+            this.collision = false;  // prevent almost simultaneous events
+            if (this.allItems[i].sprite === 'images/Heart.png') {
                 this.gamePoints = this.gamePoints + 100;
                 document.getElementById("announce").innerHTML = "Extra Life Heart found: You gained 100 points!!";
+                game.playSound('heart');
             }
             else {
                 this.gamePoints = this.gamePoints + 50;
                 document.getElementById("announce").innerHTML = "Sparkly Gem found: You gained 50 points!!";
+                game.playSound('itemFound');
             }
             // Delete this item from array
             this.allItems.splice(i, 1);
             game.saveScore();
+            if (this.gamePoints >= 800) {
+                game.winGame();
+                game.pause();
+            }
             game.displayStatus();
-            this.capture = true;
             return;
         }
     }
@@ -228,10 +243,14 @@ Game.prototype.update = function () {
 
     // Player Reached Water - Win Points
      if (this.player.y <= 0) {
-        game.playSound('water');
-        this.pause = true;
-        this.gamePoints += 50;
-        game.displayStatus();
+         game.playSound('water');
+         this.pause = true;
+         this.gamePoints += 50;
+         if (this.gamePoints >= 800) {
+             game.winGame();
+             game.pause();
+         }
+         game.displayStatus();
          // Transition to Level 2
          if ((this.gameLevel === 1) && (this.gamePoints >= 400)) {
              game.playSound('nextLevel');
@@ -259,13 +278,13 @@ Game.prototype.update = function () {
 
      // Player crashed into bug - Lose Points
      if (this.collision === true) {
-         game.playSound('bug');
          this.pause = true;
          this.gamePoints = this.gamePoints - 50;
          game.displayStatus();
          setTimeout(function() {
-            document.getElementById("announce").innerHTML = "BUG CRASH:  Try again!!";
-            this.player.x = (TILE_WIDTH/2) * 4; // Return to start place
+            document.getElementById("announce").innerHTML = "BUG CRASH: Minus 50 points ... Try again!!";
+            //this.player.x = (TILE_WIDTH/2) * 4;
+             // Return to starting row
             this.player.y = TILE_HEIGHT*5;
             this.pause = false;
              this.collision = false;
@@ -275,10 +294,10 @@ Game.prototype.update = function () {
 
      // Player captured an item - Gain Points
     if (this.capture === true) {
-        game.playSound('itemFound');
         this.pause = true;
         setTimeout(function() {
-            this.player.x = (TILE_WIDTH/2) * 4; // Return to start place
+            //this.player.x = (TILE_WIDTH/2) * 4;
+            // Return to starting row
             this.player.y = TILE_HEIGHT*5;
             this.pause = false;
         }.bind(this), 1000);
@@ -297,6 +316,8 @@ Game.prototype.update = function () {
     if (this.gamePoints >= 400) {
         this.gameLevel = 2;
     }
+
+
 
      // Update Score Display
      game.displayStatus();
@@ -398,6 +419,19 @@ Game.prototype.resetGame = function()  {
 Game.prototype.quitGame = function() {
     END_GAME = true;
     window.close();
+}
+
+Game.prototype.winGame = function() {
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // setTimeout(function() {
+    //     //game.resetGame();
+    //
+         document.getElementById("announce").innerHTML = "GREAT GOING:  You have won this game!!";
+         game.playSound('win');
+    //game.pause();
+    // }.bind(this), 6000);
+
 }
 
 // Returns a random integer between min (included) and max (included)
