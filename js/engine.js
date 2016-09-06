@@ -49,7 +49,7 @@ var Engine = (function(global) {
 
         /* If game first initializing, render grid and player, then pause
          * awaiting start button click */
-        if (INIT_GAME) {
+        if (initializeGame) {
             render();
             game.pause = true;
         }
@@ -113,7 +113,6 @@ var Engine = (function(global) {
         game.allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        //game.player.update();  // ToDo this does nothing?
     }
 
     /* This function initially draws the "game level", it will then call
@@ -158,14 +157,36 @@ var Engine = (function(global) {
         renderEntities();
 
         /* If game over, render black screen, pause 5 seconds to display results, then call resetGame */
-        if (END_GAME) {
+        if (endGame) {
             game.playSound('gameOver');
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             setTimeout(function() {
                 game.resetGame();
-                document.getElementById("announce").innerHTML = "Click Play Game Button to try again";
+                //document.getElementById("announce").innerHTML = "Click Play Game Button to try again";
             }.bind(this), 4000);
+        }
+
+        // if (nextLevel) {
+        //     game.playSound('nextLevel');
+        //     ctx.fillStyle = "black";
+        //     ctx.fillRect(0, 0, canvas.width, canvas.height);
+        //     document.getElementById("countdown").style.visibility = "hidden";
+        //     document.getElementById("announce").innerHTML = "Good Job! New Game Level!!";
+        //     setTimeout(function() {
+        //         game.resetGame();
+        //     }.bind(this), 4000);
+        // }
+
+        if (winGame) {
+            game.playSound('win');
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            document.getElementById("countdown").style.visibility = "hidden";
+            document.getElementById("announce").innerHTML = "GREAT GOING:  YOU HAVE WON THIS GAME!!";
+            setTimeout(function() {
+                game.resetGame();
+            }.bind(this), 5000);
         }
     }
 
@@ -195,8 +216,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // Start a new game with new player
-        //game.player.reset();
+
     }
 
     /* Go ahead and load all of the images we know we're going to need to

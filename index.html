@@ -8,82 +8,102 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Merienda+One" rel="stylesheet">
     <!-- Favicons -->
-<!--     <link rel="shortcut icon" href="favicon.ico" /> -->
+    <!--     <link rel="shortcut icon" href="favicon.ico" /> -->
     <!-- Bootstrap -->
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://use.fontawesome.com/bfe1adca24.js"></script>
     <!-- Stylesheet -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <!--<audio src="audio/Lost-Jungle_Looping.mp3" controls="true" loop="true" autoplay="true"></audio>-->
- <!--mp3 Music courtesy of Eric Matyas www.soundimage.org-->
+<!--mp3 Music courtesy of Eric Matyas www.soundimage.org-->
 <div class="container-fluid display">
     <div class="col-xs-12">
-      <h2>Help Buddy Escape to the Sea</h2>
+        <h2>Help Buddy Escape to the Sea</h2>
     </div>
     <div class="col-xs-12">
         <button type="button" class="btn btn-lg btn-custom" data-toggle="modal" data-target="#instructsModal">How to Play</button>
         <button id="quitButton" type="button" class="btn btn-lg btn-custom" data-toggle="modal" data-target="#quitModal">Quit Game</button>
         <button id="startButton" type="button" class="btn btn-lg btn-custom" onclick="game.playGame()">Play Game</button>
-        <!-- Todo implement quit game button -->
     </div>
 
-    <!--<div class="col-xs-12"><h3><span id="count">5</span> seconds</h3></div>-->
     <div class="col-xs-12 timer"><span id="countdown"></span> </div>
     <div class="col-xs-12">
         <div><h3 id="score"></h3></div>
         <div><h3 id="personalBest"></h3></div>
         <div><h3 id="announce" class="blink"></h3></div>
-        <!-- class="blink" -->
     </div>
 </div>
-  <!-- Modals -->
-    <!-- Instructions Modal -->
-    <div class="modal fade" id="instructsModal" role="dialog">
+
+
+<!-- Modals -->
+<!-- Instructions Modal -->
+<div class="modal fade" id="instructsModal" role="dialog">
     <div class="modal-dialog">
         <!-- Modal content-->
         <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Modal Header</h4>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">How to Play</h4>
+            </div>
+            <div class="modal-body">
+                <h4 class="modal-text">Level 1 Play</h4>
+                <p>400 points wins. You have 60 seconds to complete Level 1. Advance playing character to the water tiles to gain points.</p>
+                <ul>
+                    <li>Move the playing character by pressing the arrow keys on your keyboard Up, Down, Left or Right.</li>
+                    <li>Pause the game by pressing the space key, but note that this will not pause the countdown timer.</li>
+                    <li>You have 60 seconds to complete Level 1.  400 points will take you to a Level 2 Game.</li>
+                    <li>Colliding with a bug causes you to lose 50 points, and be returned to start row.</li>
+                    <li>Reaching the water gives you an extra 50 points, and returns your character to start row.</li>
+                </ul>
+                <h4 class="modal-text">Level 2 Play</h4>
+                <p>800 points wins.  You have 3 minutes to complete Level 2.</p>
+                <ul>
+                    <li>In Level 2 you gain 50 points for catching a gem and 100 points for catching a heart.</li>
+                    <li>In Level 2 you lose 50 points for bug collisions.</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-lg btn-custom" data-dismiss="modal">Close</button>
+            </div>
         </div>
-        <div class="modal-body">
-            <p>Some text in the modal.</p>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn-lg btn-custom" data-dismiss="modal">Close</button>
-        </div>
-      </div>
     </div>
-    </div>
-    <!-- Quit Playing Modal -->
-    <div class="modal fade" id="quitModal" role="dialog">
-        <div class="modal-dialog">
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Confirm Action</h4>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to exit the game?</p>
-                </div>
-                <div class="modal-footer">
-                    <div class="btn-group">
-                        <button type="button" class="btn-lg btn-custom" data-dismiss="modal" onclick="game.quitGame()">Yes</button>
-                        <button type="button" class="btn-lg btn-custom" data-dismiss="modal">No</button>
-                    </div>
+</div>
+<!-- Quit Playing Modal -->
+<div class="modal fade" id="quitModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Confirm Action</h4>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to exit the game?</p>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group">
+                    <button type="button" class="btn-lg btn-custom" data-dismiss="modal" onclick="game.quitGame()">Yes</button>
+                    <button type="button" class="btn-lg btn-custom" data-dismiss="modal">No</button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 
-    <script src="js/resources.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/engine.js"></script>
+<script src="js/resources.js"></script>
+<script src="js/app.js"></script>
+<script src="js/engine.js"></script>
+
+
+<footer>
+    <div class="container">
+        <p>Copyright &copy; 2016 UseLogic, Inc. </p>
+    </div>
+</footer>
 </body>
 </html>
