@@ -167,16 +167,17 @@ var Engine = (function(global) {
             }.bind(this), 4000);
         }
 
-        // if (nextLevel) {
-        //     game.playSound('nextLevel');
-        //     ctx.fillStyle = "black";
-        //     ctx.fillRect(0, 0, canvas.width, canvas.height);
-        //     document.getElementById("countdown").style.visibility = "hidden";
-        //     document.getElementById("announce").innerHTML = "Good Job! New Game Level!!";
-        //     setTimeout(function() {
-        //         game.resetGame();
-        //     }.bind(this), 4000);
-        // }
+         if (nextLevel) {
+             //alert('reached nextlevel in engine');
+            //game.playSound('nextLevel');
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            document.getElementById("countdown").style.visibility = "hidden";
+            document.getElementById("announce").innerHTML = "Good Job! New Game Level!!";
+            setTimeout(function() {
+                game.resetGame();
+            }.bind(this), 4000);
+         }
 
         if (winGame) {
             game.playSound('win');
@@ -203,7 +204,8 @@ var Engine = (function(global) {
         });
 
         if (game.gameLevel === 2) {
-            game.allItems.forEach(function (item) {
+        //if (game.allItems) {
+            game.allItems.forEach(function(item) {
                 item.render();
             });
         }

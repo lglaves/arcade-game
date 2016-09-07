@@ -11,9 +11,11 @@ var endGame = false;
 var timeOver = false;
 var winGame = false;
 var nextLevel = false;
+var GAME_LEVEL = 1;  // ALWAYS START AT 1
 // Init Game Values
 var bestScore = 100;
 var countGameWins = 0;
+
 /************************************************************************/
 /************************************************************************/
  // Create Enemies our player must avoid
@@ -98,15 +100,15 @@ Player.prototype.handleInput = function(key) {
 // Create Game (template definition of object's properties and methods)
 var Game = function() {
     this.pause = false,
-    this.gameLives = 4,
-    this.gameLevel = 2,
-    this.gamePoints = 750; // for testing
-    this.gameWins = 0;
+    this.gameLives = 0,
+    this.gameLevel = GAME_LEVEL,
+    this.gamePoints = 0, // for testing
+    this.gameWins = 0,
     this.collision = false,
     this.capture = false,
     this.init(),
     this.displayStatus();
-    this.saveScore();
+    this.savedScore();
     this.audio = {
         muted: false,
         bug: new Audio('audio/bug3.wav'),
@@ -119,9 +121,11 @@ var Game = function() {
     };
 };
 
-// Initialize new game with player and enemies
+// Initialize new game board
 Game.prototype.init = function () {
     if (this.gameLevel === 1) {
+        this.gameLives = 1;
+        this.gamePoints = 350; // for testing
         this.player = new Player();
         this.allEnemies = [
             new Enemy(-100, 60, this.getRandomIntInclusive(100, 200)),
@@ -129,9 +133,12 @@ Game.prototype.init = function () {
             new Enemy(-100, 60 + (2 * TILE_HEIGHT), this.getRandomIntInclusive(100, 300)),
             new Enemy(-100, 60 + (3 * TILE_HEIGHT), this.getRandomIntInclusive(200, 400))
         ];
+        this.allItems = [];
     }
 
     if (this.gameLevel === 2) {
+        this.gameLives = 4;
+        this.gamePoints = 750; // for testing
         this.player = new Player();
         this.allEnemies = [
             new Enemy(-100, 60, this.getRandomIntInclusive(100, 200)),
@@ -187,7 +194,7 @@ Game.prototype.playSound = function(sound) {
 Game.prototype.displayStatus = function () {
     document.getElementById("score").innerHTML = '# of Lives: ' + this.gameLives + '   Game Level: ' + this.gameLevel + '   Game Points: ' + this.gamePoints;
     if (!initializeGame) {
-        document.getElementById("personalBest").innerHTML = "Your Highest Score: " + localStorage.getItem("saveScore") + "   Your Game Wins: " + localStorage.getItem("gameWins");
+        document.getElementById("personalBest").innerHTML = "Your Highest Score: " + localStorage.getItem("savedScore") + "   Your Game Wins: " + localStorage.getItem("savedGameWins");
     }
 };
 
@@ -210,32 +217,34 @@ Game.prototype.checkCollisions = function() {
 // If item captured, set capture flag, update game points, update announcement,
 // save score to local storage, delete captured item from array, check for Level 2 win
 Game.prototype.checkCaptures = function() {
-    for (var i = 0; i < this.allItems.length; i++) {
-        if ((Math.abs(this.allItems[i].y - this.player.y) <= 23) && (Math.abs(this.player.x - this.allItems[i].x) < TILE_WIDTH)) {
-            this.capture = true;
-            this.collision = false;  // prevent almost simultaneous events
-            if (this.allItems[i].sprite === 'images/Heart.png') {
-                this.gamePoints = this.gamePoints + 100;
-                document.getElementById("announce").innerHTML = "Extra Life Heart found: You gained 100 points!!";
-                game.playSound('heart');
+//    if (this.gameLevel === 2) {
+        for (var i = 0; i < this.allItems.length; i++) {
+            if ((Math.abs(this.allItems[i].y - this.player.y) <= 23) && (Math.abs(this.player.x - this.allItems[i].x) < TILE_WIDTH)) {
+                this.capture = true;
+                this.collision = false;  // prevent almost simultaneous events
+                if (this.allItems[i].sprite === 'images/Heart.png') {
+                    this.gamePoints = this.gamePoints + 100;
+                    document.getElementById("announce").innerHTML = "Extra Life Heart found: You gained 100 points!!";
+                    game.playSound('heart');
+                }
+                else {
+                    this.gamePoints = this.gamePoints + 50;
+                    document.getElementById("announce").innerHTML = "Sparkly Gem found: You gained 50 points!!";
+                    game.playSound('itemFound');
+                }
+                this.allItems.splice(i, 1);  // Delete this item from array
+                game.savedScore();
+                // Update for Level 2 (there are no items to capture in Level 1)
+                if (this.gamePoints >= 800) {
+                    winGame = true;  // Set flag for engine.js to clear screen
+                    this.gameWins += 1;
+                    game.savedScore();  // Persist number of games won
+                }
+                game.displayStatus();
+                return;
             }
-            else {
-                this.gamePoints = this.gamePoints + 50;
-                document.getElementById("announce").innerHTML = "Sparkly Gem found: You gained 50 points!!";
-                game.playSound('itemFound');
-            }
-            // Delete this item from array
-            this.allItems.splice(i, 1);
-            game.saveScore();
-            if (this.gamePoints >= 800) {
-                winGame = true;  // Set flag
-                countGameWins += 1;
-                game.saveScore();
-            }
-            game.displayStatus();
-            return;
         }
-    }
+ //   }
 };
 
 
@@ -244,67 +253,74 @@ Game.prototype.checkCaptures = function() {
 Game.prototype.update = function () {
 
     // Player Reached Water - Win Points
-     if (this.player.y <= 0) {
-         game.playSound('water');
-         this.pause = true;
-         this.gamePoints += 50;
-         game.displayStatus();
+    if (this.player.y <= 0) {
+     game.playSound('water');
+     this.pause = true;
+     this.gamePoints += 50;
+     game.displayStatus();
 
-         // Player Wins Game (Level 2)
-         if (this.gamePoints >= 800) {
-             winGame = true;  // Set flag
-             game.playSound('win');
-             countGameWins ++;
-             document.getElementById("announce").innerHTML = "GREAT GOING:  You have won this game!!";
-             game.pause();
-             ctx.fillStyle = "black";
-             ctx.fillRect(0, 0, canvas.width, canvas.height);
-             setTimeout(function() {
-                 game.resetGame();
-             }.bind(this), 2000);
-         }
+     // Player Wins Game (Level 2)
+     if (this.gamePoints >= 800) {
+         winGame = true;  // Set flag for engine.js to clear screen
+         game.playSound('win');
+         this.gameWins += 1;
+         // document.getElementById("countdown").style.visibility = "hidden";
+         // document.getElementById("announce").innerHTML = "GREAT GOING:  You have won this game!!";
+         // ctx.fillStyle = "black";
+         // ctx.fillRect(0, 0, canvas.width, canvas.height);
+         setTimeout(function() {
+             game.resetGame();
+             this.pause = false;
+         }.bind(this), 2000);
+     }
 
          // Player Wins Game Level 1 - Transition to Level 2
          if ((this.gameLevel === 1) && (this.gamePoints >= 400)) {
+             nextLevel = true;  // Set flag for engine.js to clear screen
              game.playSound('nextLevel');
+             GAME_LEVEL = 2;
              this.gameLevel = 2;
-             document.getElementById("countdown").style.visibility = "hidden";
-             document.getElementById("announce").innerHTML = "Good Job! New Game Level!!";
-             ctx.fillStyle = "black";
-             ctx.fillRect(0, 0, canvas.width, canvas.height);
+             this.gameLives = 4;
+             this.gamePoints = 750;  // for testing
+             // document.getElementById("countdown").style.visibility = "hidden";
+             // document.getElementById("announce").innerHTML = "Good Job! New Game Level!!";
+             // ctx.fillStyle = "black";
+             // ctx.fillRect(0, 0, canvas.width, canvas.height);
              setTimeout(function() {
-                 game.saveScore();
+                 game.savedScore();
                  game.resetGame();
+                 this.pause = false;
              }.bind(this), 2000);
          }
          // Continue Playing Game
-         else {
+         //else {
             setTimeout(function() {
                 document.getElementById("announce").innerHTML = "You Reached Water Safely:  Extra 50 Points!!";
-                game.saveScore();
+                game.savedScore();
                 this.player.x = (TILE_WIDTH/2) * 4; // Return to start place
                 this.player.y = TILE_HEIGHT*5;
                 this.pause = false;
             }.bind(this), 1000);
-         }
+         //}
      }
 
-     // Player crashed into bug - Lose Points
-     if (this.collision === true) {
-         this.pause = true;
-         this.gamePoints = this.gamePoints - 50;
-         game.displayStatus();
-         setTimeout(function() {
-            document.getElementById("announce").innerHTML = "BUG CRASH: Minus 50 points ... Try again!!";
-            //this.player.x = (TILE_WIDTH/2) * 4;
-            this.player.y = TILE_HEIGHT*5;  // Return to starting row
-            this.pause = false;
-             this.collision = false;
-         }.bind(this), 1000);
+    // Player crashed into bug - Lose Points
+    if (this.collision === true) {
+     this.pause = true;
+     this.gamePoints = this.gamePoints - 50;
+     game.displayStatus();
+     setTimeout(function() {
+        document.getElementById("announce").innerHTML = "BUG CRASH: Minus 50 points ... Try again!!";
+        //this.player.x = (TILE_WIDTH/2) * 4;
+        this.player.y = TILE_HEIGHT*5;  // Return to starting row
+        this.pause = false;
          this.collision = false;
-     }
+     }.bind(this), 1000);
+     this.collision = false;
+    }
 
-     // Player captured an item - Gain Points
+    // Only in Level 2 Game -- If Player captured an item - Gain Points
+    // lbg engine.js checks for captures
     if (this.capture === true) {
         this.pause = true;
         setTimeout(function() {
@@ -315,7 +331,7 @@ Game.prototype.update = function () {
         this.capture = false;
     }
 
-     // Update Lives and Points
+    // Update Lives and Points
     if (this.gamePoints >= 100) {
         this.gameLives = Math.floor(this.gamePoints / 100);
     }
@@ -324,36 +340,42 @@ Game.prototype.update = function () {
         this.gameLives = 0;
     }
 
-    if (this.gamePoints >= 400) {
-        this.gameLevel = 2;
-    }
-
-
+    // if (this.gamePoints >= 400) {
+    //     this.gameLevel = 2;
+    // }
 
      // Update Score Display
      game.displayStatus();
 
     // Game End - Player used up all lives
     if (this.gamePoints < 100) {
-        endGame = true;
+        endGame = true;  // Set flag for engine.js to clear screen
         document.getElementById("countdown").style.visibility = "hidden";
         document.getElementById("announce").innerHTML = "Game Over: Lost all Lives";
     }
 
     // Game End - Time is Up, Timer will show "Time is Up!"
     if (timeOver) {
-        endGame = true;
+        endGame = true;  // Set flag for engine.js to clear screen
         document.getElementById("announce").style.visibility = "hidden";
+        document.getElementById("announce").innerHTML = "Game Over: Time Limit Reached";
     }
 
 } ;  // update()
 
-// Save highest score for local storage
-Game.prototype.saveScore = function () {
+// Save highest score for this player
+Game.prototype.savedScore = function () {
 
+    // Save highest points achieved in local storage
     if (this.gamePoints > bestScore) {
         bestScore = this.gamePoints;
     }
+
+    // Save highest number of wins for this player
+    //if (this.gameWins >= countGameWins) {
+        countGameWins = this.gameWins;
+        console.log('countGameWins = ' + countGameWins);
+    //}
 
     // Check whether local storage is supported
     function supportsLocalStorage() {
@@ -366,12 +388,12 @@ Game.prototype.saveScore = function () {
     } else {
         try {
             // Set the local storage variable if it does not exist
-            if (!localStorage.getItem('saveScore')) {
-                localStorage.setItem('saveScore', bestScore);
+            if (!localStorage.getItem('savedScore')) {
+                localStorage.setItem('savedScore', bestScore);
             }
             // Update the local storage variable
-            else if (localStorage.getItem('saveScore') && (bestScore > localStorage.getItem('saveScore'))) {
-                localStorage.setItem('saveScore', bestScore);
+            else if (localStorage.getItem('savedScore') && (bestScore > localStorage.getItem('savedScore'))) {
+                localStorage.setItem('savedScore', bestScore);
             }
         } catch (e) {
             // If any errors, catch and alert the user
@@ -382,12 +404,12 @@ Game.prototype.saveScore = function () {
 
         try {
             // Set the local storage variable if it does not exist
-            if (!localStorage.getItem('gameWins')) {
-                localStorage.setItem('gameWins', countGameWins);
+            if (!localStorage.getItem('savedGameWins')) {
+                localStorage.setItem('savedGameWins', countGameWins);
             }
             // Update the local storage variable
-            else if (countGameWins > localStorage.getItem('gameWins')) {
-                localStorage.setItem('gameWins', countGameWins);
+            else if (localStorage.getItem('savedGameWins') && (countGameWins > localStorage.getItem('savedGameWins'))) {
+                localStorage.setItem('savedGameWins', countGameWins);
             }
         } catch (e) {
             // If any errors, catch and alert the user
@@ -405,7 +427,7 @@ Game.prototype.playGame = function() {
         document.getElementById("startButton").disabled = true;
         game.pause = false; // Release paused initial game screen
         initializeGame  =   false;  // When false, ok to run game engine
-        //var gameTimer = new countdownTimer('countdown', 0, 30);  // Start countdown timer
+console.log(this.gameLevel);  // test
         if (this.gameLevel === 1) {
             countdownTimer('countdown', 0, 30);
         }
@@ -415,79 +437,59 @@ Game.prototype.playGame = function() {
         document.getElementById("countdown").style.visibility = "visible";
 }
 
-// resetGame is used by engine.js
-// to initialize a new game and re-enable the play game button
-// Retain Persistent highest score and display statistics
-// Game.prototype.resetGame = function()  {
-//     initializeGame = true;  // When true, setup and display start screen (when false go ahead and run game engine)
-//     endGame = false;
-//     timeOver = false;
-//     location.reload();
-//     if (this.gameLevel === 1) {
-//         this.gameLives = 1;
-//         this.gamePoints = 300; // for testing
-//         countdownTimer('countdown', 0, 30);
-//     }
-//     if (this.gameLevel === 2) {
-//         this.gameLives = 4;
-//         this.gamePoints = 400;
-//         countdownTimer('countdown', 1, 0);
-//         document.getElementById("announce").innerHTML = "Click Play Game Button to Play Level 2";
-//     }
-//     //game.init();
-//     document.getElementById("startButton").disabled = false;
-// }
-
-// resetGame is used by engine.js
-// to initialize a new game board
+// resetGame is used to initialize a new game board
 Game.prototype.resetGame = function()  {
     initializeGame = true;  // When true, setup and display start screen (when false go ahead and run game engine)
     endGame = false;
     timeOver = false;
-    location.reload(true);
-    alert("START OF RESET: game.gameLevel = " + game.gameLevel + "  this.gameLevel = " + this.gameLevel + "   winGame = " + winGame);
 
-    // Play Level 1 Again
+    console.log("START OF RESET: this.gameLevel = " + this.gameLevel +
+        "   localStorage Wins  = " + localStorage.getItem('savedGameWins') +
+    "   nextLevel = " + nextLevel);
+
+
+    // Play Level 1 Ongoing
     if (this.gameLevel === 1 && nextLevel === false) {
-        this.gameLives = 1;
-        this.gamePoints = 350; // testing
+        // this.gameLives = 1;
+        // this.gamePoints = 350; // testing
         countdownTimer('countdown', 0, 30);
         document.getElementById("announce").innerHTML = "Click Play Game Button to Try Again.";
 
     }
 
-    // Move Up to Level 2
+    // Level 1 Win --> Move Up to Level 2
     if (this.gameLevel === 1 && nextLevel === true) {
+        GAME_LEVEL = 2;
         this.gameLevel = 2;
     }
 
-    // Play Level 2
+    // Play Level 2 Ongoing
     if (this.gameLevel === 2 && winGame === false) {
-        this.gameLives = 4;
-        this.gamePoints = 750;  // for testing
+        // this.gameLives = 4;
+        // this.gamePoints = 700;  // for testing
         countdownTimer('countdown', 1, 0);
         document.getElementById("announce").innerHTML = "Click Play Game Button to Play Level 2";
     }
 
-    // Level 2 Win - Revert to Level 1 again
+    // Level 2 Win --> Revert to Level 1 again
     else if (this.gameLevel === 2 && winGame === true) {
-        winGame = false;
-        this.gameLevel = 1;
-        this.gamePoints = 100;  // testing
-        this.gameLives = 1;
+        winGame = false;  // Reset Level 2 game win flag
+        GAME_LEVEL = 1;
+        // this.gameLevel = 1;
+        // this.gamePoints = 100;  // testing
+        // this.gameLives = 1;
         countdownTimer('countdown', 0, 30);
         document.getElementById("announce").innerHTML = "Click Play Game Button to Play Level 1 Again.";
     }
-
-    game.init();  // Set up game board
-    game.displayStatus();
+    location.reload(true);  // Reload the page from the server
+    this.init();  // Set up game board, game points and game player lives
+    this.displayStatus();
     document.getElementById("startButton").disabled = false;
-    alert("END OF RESET: game.gameLevel = " + game.gameLevel + "  this.gameLevel = " + this.gameLevel + "   winGame = " + winGame);
+    //alert("END OF RESET: game.gameLevel = " + game.gameLevel + "  this.gameLevel = " + this.gameLevel + "   localStorage  = " + localStorage.getItem('savedGameWins'));
 }
 
 // Quit Game on Button Click
 Game.prototype.quitGame = function() {
-    endGame = true;
     window.close();
 }
 
