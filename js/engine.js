@@ -54,12 +54,12 @@ var Engine = (function(global) {
             game.pause = true;
         }
 
-        /* When game is paused do not update and cease rendering, otherwise
+        /* When game.paused() is true, stop rendering and updates
          * when game is NOT paused, update and render */
         if (game.pause === false) {
             update(dt);
             render();
-            game.update();
+            game.updateGame();  // Updated player & game status
         }
 
         /* Set our lastTime variable which is used to determine the time delta
@@ -79,7 +79,6 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
-        reset();
         lastTime = Date.now();
         main();  // This starts the game engine running
     }
@@ -157,37 +156,48 @@ var Engine = (function(global) {
         renderEntities();
 
         /* If game over, render black screen, pause 5 seconds to display results, then call resetGame */
-        if (endGame) {
+        if (endGame === true) {
+            console.log('-----> reached endGame in engine');
             game.playSound('gameOver');
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             setTimeout(function() {
+                endGame = false;
+                // document.getElementById("announce").innerHTML = "Click Play Game Button to try again"; // does not display long enough
                 game.resetGame();
-                //document.getElementById("announce").innerHTML = "Click Play Game Button to try again";
-            }.bind(this), 4000);
+            }.bind(this), 3000);
+            // TODO TRY THIS WITH NO TIME DELAY - much better, but click play button is not displaying
+            // endGame = false;
+            // game.resetGame();
+            // document.getElementById("announce").innerHTML = "Click Play Game Button to try again";
         }
 
-         if (nextLevel) {
-             //alert('reached nextlevel in engine');
-            //game.playSound('nextLevel');
+        if (advanceLevel === true) {
+            console.log('-----> reached nextlevel in engine');
+            game.playSound('nextLevel');
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             document.getElementById("countdown").style.visibility = "hidden";
             document.getElementById("announce").innerHTML = "Good Job! New Game Level!!";
+            // TODO RESET WITHOUT DELAY FUNCTION -- never reset!
             setTimeout(function() {
+                //nextLevel = false;  // not sure leslie
+                advanceLevel = false;
                 game.resetGame();
             }.bind(this), 4000);
-         }
+        }
 
-        if (winGame) {
+        if (winGame === true) {
+            console.log('-----> reached gameWin in engine');
             game.playSound('win');
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             document.getElementById("countdown").style.visibility = "hidden";
             document.getElementById("announce").innerHTML = "GREAT GOING:  YOU HAVE WON THIS GAME!!";
             setTimeout(function() {
+                winGame = false;
                 game.resetGame();
-            }.bind(this), 5000);
+            }.bind(this), 3500);
         }
     }
 
@@ -199,12 +209,14 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
+
+        //       if (game.gameLevel === 1) {
         game.allEnemies.forEach(function(enemy) {
             enemy.render();
         });
+        //       }
 
         if (game.gameLevel === 2) {
-        //if (game.allItems) {
             game.allItems.forEach(function(item) {
                 item.render();
             });
@@ -215,14 +227,14 @@ var Engine = (function(global) {
 
     /* This function does nothing but it could have been a good place to
      * handle game reset states - maybe a new game menu or a game over screen
-     * those sorts of things. It's only called once by the init() method.
+     * those sorts of things. It's only called once by the setupGame() method.
      */
     function reset() {
 
     }
 
     /* Go ahead and load all of the images we know we're going to need to
-     * draw our game level. Then set init as the callback method, so that when
+     * draw our game level. Then set setupGame as the callback method, so that when
      * all of these images are properly loaded our game will start.
      */
     Resources.load([
