@@ -163,7 +163,6 @@ var Engine = (function(global) {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             setTimeout(function() {
                 endGame = false;
-                // document.getElementById("announce").innerHTML = "Click Play Game Button to try again"; // does not display long enough
                 game.resetGame();
             }.bind(this), 3000);
             // TODO TRY THIS WITH NO TIME DELAY - much better, but click play button is not displaying
