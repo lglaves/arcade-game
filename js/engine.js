@@ -181,7 +181,7 @@ var Engine = (function(global) {
             setTimeout(function() {
                 advanceLevel = false;
                 game.resetGame();  // should reset to level 2
-            }.bind(this), 1000);
+            }.bind(this), 3000);
         }
 
         if (winGame === true) {
