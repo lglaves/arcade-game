@@ -58,8 +58,9 @@ var Engine = (function(global) {
          * when game is NOT paused, update and render */
         if (game.pause === false) {
             update(dt);
-            render();
             game.updateGame();  // Updated player & game status
+            render();
+            //game.updateGame();  // Updated player & game status
         }
 
         /* Set our lastTime variable which is used to determine the time delta
@@ -94,9 +95,12 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
+        console.log('Entered update(dt) in engine');
         updateEntities(dt);
+        console.log('calling checkCollisions from Engine');
         game.checkCollisions();
         if (game.gameLevel === 2) {
+            console.log('calling checkCaptures from Engine');
             game.checkCaptures();
         }
     }
@@ -165,25 +169,19 @@ var Engine = (function(global) {
                 endGame = false;
                 game.resetGame();
             }.bind(this), 3000);
-            // TODO TRY THIS WITH NO TIME DELAY - much better, but click play button is not displaying
-            // endGame = false;
-            // game.resetGame();
-            // document.getElementById("announce").innerHTML = "Click Play Game Button to try again";
         }
 
         if (advanceLevel === true) {
-            console.log('-----> reached nextlevel in engine');
+            console.log('-----> reached advancelevel in engine');
             game.playSound('nextLevel');
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             document.getElementById("countdown").style.visibility = "hidden";
             document.getElementById("announce").innerHTML = "Good Job! New Game Level!!";
-            // TODO RESET WITHOUT DELAY FUNCTION -- never reset!
             setTimeout(function() {
-                //nextLevel = false;  // not sure leslie
                 advanceLevel = false;
-                game.resetGame();
-            }.bind(this), 4000);
+                game.resetGame();  // should reset to level 2
+            }.bind(this), 1000);
         }
 
         if (winGame === true) {
@@ -208,12 +206,9 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
-
-        //       if (game.gameLevel === 1) {
         game.allEnemies.forEach(function(enemy) {
             enemy.render();
         });
-        //       }
 
         if (game.gameLevel === 2) {
             game.allItems.forEach(function(item) {
@@ -228,9 +223,9 @@ var Engine = (function(global) {
      * handle game reset states - maybe a new game menu or a game over screen
      * those sorts of things. It's only called once by the setupGame() method.
      */
-    function reset() {
-
-    }
+    // function reset() {
+    //
+    // }
 
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set setupGame as the callback method, so that when
