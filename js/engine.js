@@ -95,12 +95,9 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
-        console.log('Entered update(dt) in engine');
         updateEntities(dt);
-        console.log('calling checkCollisions from Engine');
         game.checkCollisions();
         if (game.gameLevel === 2) {
-            console.log('calling checkCaptures from Engine');
             game.checkCaptures();
         }
     }
@@ -161,7 +158,6 @@ var Engine = (function(global) {
 
         /* If game over, render black screen, pause 5 seconds to display results, then call resetGame */
         if (endGame === true) {
-            console.log('-----> reached endGame in engine');
             game.playSound('gameOver');
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -172,7 +168,6 @@ var Engine = (function(global) {
         }
 
         if (advanceLevel === true) {
-            console.log('-----> reached advancelevel in engine');
             game.playSound('nextLevel');
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -185,7 +180,6 @@ var Engine = (function(global) {
         }
 
         if (winGame === true) {
-            console.log('-----> reached gameWin in engine');
             game.playSound('win');
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
