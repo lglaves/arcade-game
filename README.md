@@ -5,6 +5,7 @@ Using the base project provided by Udacity, I added new functionality to create 
 ## How to Run the Program
 * Download the zip file to your computer and unzip in any convenient location.
 * Open the Project Folder, and run index.html in your web browser of choice.
+* This game is only designed to be played on Desktop, Laptop, iPad Pro and iPad (no Mobile yet)
 
 ## Game Play
 * Move the playing character by pressing the arrow keys on your keyboard Up, Down, Left or Right.
@@ -37,5 +38,13 @@ www.freesound.org
 ## Javascript Particulars:
 *   Window Reload from Server
 *   Use local storage to persist scores
-*   Impletment a timer
+*   Implement a timer
 *   Random number generator
+
+## Browsers Tested:
+* Chrome Canary
+* Firefox
+* Internet Explorer
+* Edge
+* Safari
+

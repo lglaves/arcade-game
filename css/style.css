@@ -16,14 +16,15 @@ footer {
 .timer {
     font-size: 3em;
     color: white;
+    height: 1.25em;
 }
 
 .btn-custom {
-    border-radius: 5px;
+    border-radius: 6px;
     background-color: hsl(201, 100%, 22%) !important;
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#008bd6", endColorstr="#004870");
-    background-image: -khtml-gradient(linear, left top, left bottom, from(#008bd6), to(#004870));
+    /*background-image: -khtml-gradient(linear, left top, left bottom, from(#008bd6), to(#004870));*/
     background-image: -moz-linear-gradient(top, #008bd6, #004870);
     background-image: -ms-linear-gradient(top, #008bd6, #004870);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #008bd6), color-stop(100%, #004870));
@@ -35,6 +36,16 @@ footer {
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.33);
     -webkit-font-smoothing: antialiased;
     margin: 1em;
+}
+
+.btn-custom:hover {
+    background: #3cb0fd;
+    background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+    text-decoration: none;
 }
 
 /* Modal Style */
@@ -64,30 +75,57 @@ footer {
 }
 
 .modal-header {
+    margin: 2px;
     padding: 2px 16px;
     background-color: #5cb85c;
-    border-radius: 5px 5px 0px 0px;
+    border-radius: 5px 5px 0 0;
+    color: white;
+    height: 4em;
+}
+.modal-title {
+    text-align: center;
+    font-size: 2em;
     color: white;
 }
+/* The Close Button */
+.close {
+    color: #fff;
+    float: right;
+    font-size: 2em;
+    font-weight: bold;
+}
 
-.modal-text {
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-subtitle {
     text-align: center;
-    font-size: 3em;
+    font-size: 2em;
     color: black;
 }
 
 .modal-body {
+    font-size: 1.5em;
+    text-align: left;
+    margin: 2px;
     padding: 2px 16px;
     background-color: white;
     max-height: 80vh;
     max-width: 80vw;
+    /*overflow-y: scroll;*/
 }
 
 .modal-footer {
+    margin: 2px;
     padding: 2px 16px;
     background-color: #5cb85c;
-    border-radius: 0px 0px 5px 5px;
+    border-radius: 0 0 5px 5px;
     color: white;
+    height: 4em;
 }
 
 h3 {
@@ -102,9 +140,10 @@ h3 {
     color: red;
     -webkit-animation: blink 2s linear infinite;
     -moz-animation: blink 2s linear infinite;
-    -ms-animation: blink 2s linear infinite;
+    /*-ms-animation: blink 2s linear infinite;*/
     -o-animation: blink 2s linear infinite;
     animation: blink 2s linear infinite;
+    height: 1.25em;
 }
 
 @-webkit-keyframes blink {

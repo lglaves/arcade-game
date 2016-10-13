@@ -18,8 +18,7 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<!--<audio src="audio/Lost-Jungle_Looping.mp3" controls="true" loop="true" autoplay="true"></audio>-->
-<!--mp3 Music courtesy of Eric Matyas www.soundimage.org-->
+
 <div class="container-fluid display">
     <div class="col-xs-12">
         <h2>Help Buddy Escape to the Sea</h2>
@@ -31,7 +30,9 @@
         <button id="startButton" type="button" class="btn btn-lg btn-custom" onclick="game.playGame()">Play Game</button>
     </div>
 
-    <div class="col-xs-12 timer"><span id="countdown"></span> </div>
+    <div class="col-xs-12 timer">
+        <span id="countdown"></span>
+    </div>
     <div class="col-xs-12">
         <div><h3 id="score"></h3></div>
         <div><h3 id="personalBest"></h3></div>
@@ -47,28 +48,27 @@
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">How to Play</h4>
+                <button type="button" class="close" data-dismiss="modal">x</button>
+                <h3 class="modal-title">How to Play</h3>
             </div>
             <div class="modal-body">
-                <h4 class="modal-text">Level 1 Play</h4>
-                <p>400 points wins. You have 60 seconds to complete Level 1. Advance playing character to the water tiles to gain points.</p>
+                <h4 class="modal-subtitle">Level 1 Play</h4>
+                <p>400 points will get you to the next level of the game. Advance playing character to the water tiles to gain points.</p>
                 <ul>
-                    <li>Move the playing character by pressing the arrow keys on your keyboard Up, Down, Left or Right.</li>
+                    <li>Move the playing character by pressing the keyboard Arrow Keys Up, Down, Left or Right.</li>
                     <li>Pause the game by pressing the space key, but note that this will not pause the countdown timer.</li>
-                    <li>You have 60 seconds to complete Level 1.  400 points will take you to a Level 2 Game.</li>
-                    <li>Colliding with a bug causes you to lose 50 points, and be returned to start row.</li>
-                    <li>Reaching the water gives you an extra 50 points, and returns your character to start row.</li>
+                    <li>Colliding with a bug causes you to lose 50 points and be returned to start row.</li>
+                    <li>Reaching the water gives you an extra 50 points and returns you to start row.</li>
                 </ul>
-                <h4 class="modal-text">Level 2 Play</h4>
-                <p>800 points wins.  You have 3 minutes to complete Level 2.</p>
+                <h4 class="modal-subtitle">Level 2 Play</h4>
+                <p>800 points wins.</p>
                 <ul>
                     <li>In Level 2 you gain 50 points for catching a gem and 100 points for catching a heart.</li>
                     <li>In Level 2 you lose 50 points for bug collisions.</li>
                 </ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-lg btn-custom" data-dismiss="modal">Close</button>
+                <button type="button" class="btn-md btn-custom" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -79,16 +79,16 @@
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Confirm Action</h4>
+                <button type="button" class="close close-custom" data-dismiss="modal">x</button>
+                <h3 class="modal-title">Delete History</h3>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to clear all past game history?</p>
+                <p>Are you sure you want to remove all past game history?</p>
             </div>
             <div class="modal-footer">
                 <div class="btn-group">
-                    <button type="button" class="btn-lg btn-custom" data-dismiss="modal" onclick="game.clearHistory()">Yes</button>
-                    <button type="button" class="btn-lg btn-custom" data-dismiss="modal">No</button>
+                    <button type="button" class="btn-md btn-custom" data-dismiss="modal" onclick="game.clearHistory()">Yes</button>
+                    <button type="button" class="btn-md btn-custom" data-dismiss="modal">No</button>
                 </div>
             </div>
         </div>
@@ -100,16 +100,16 @@
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Confirm Action</h4>
+                <button type="button" class="close close-custom" data-dismiss="modal">x</button>
+                <h3 class="modal-title">Quit Game</h3>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to exit the game and clear all past game history?</p>
+                <p>Are you sure you want to exit the game and close the browser window?</p>
             </div>
             <div class="modal-footer">
                 <div class="btn-group">
-                    <button type="button" class="btn-lg btn-custom" data-dismiss="modal" onclick="game.quitGame()">Yes</button>
-                    <button type="button" class="btn-lg btn-custom" data-dismiss="modal">No</button>
+                    <button type="button" class="btn-md btn-custom" data-dismiss="modal" onclick="game.quitGame()">Yes</button>
+                    <button type="button" class="btn-md btn-custom" data-dismiss="modal">No</button>
                 </div>
             </div>
         </div>
@@ -125,6 +125,11 @@
 <footer>
     <div class="container">
         <p>Copyright &copy; 2016 UseLogic, Inc. </p>
+        <audio controls loop>
+            <source src="audio/Lost-Jungle_Looping.mp3" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+        <!--mp3 Music courtesy of Eric Matyas www.soundimage.org-->
     </div>
 </footer>
 </body>

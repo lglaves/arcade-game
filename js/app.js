@@ -1,6 +1,4 @@
 "use strict";
-// TODO: run through html checker, and javascript, and css checkers
-// TODO: review game metrics and make sure all are met
 
 // Variables
 // TILE_WIDTH and TILE_HEIGHT are based on the engine.js method provided for creating the grid
@@ -13,8 +11,6 @@ var nextLevel = false;
 var advanceLevel = false;
 var timeOver = false;
 var bestScore = 0;
-var gameWinsCount = 0;
-var gameCount = 0;
 /************************************************************************/
 /************************************************************************/
 // Create Enemies our player must avoid
@@ -97,7 +93,7 @@ Player.prototype.handleInput = function(key) {
 // Create Game (template definition of object's properties and methods)
 var Game = function() {
     console.log('Entered Game function()');
-    this.numberOfWins = 0;
+    //this.numberOfWins = 0;
     this.pause = false;
     this.collision = false;
     this.capture = false;
@@ -168,7 +164,6 @@ Game.prototype.setupGame = function () {
     if (this.gameLevel === 1) {
         this.gamePoints = 350;
         this.gameLives = 1;
-        //this.numberOfWins = localStorage.getItem('gameWins');
         this.player = new Player();
         this.allEnemies = [
             new Enemy(-100, 60, this.getRandomIntInclusive(100, 200)),
@@ -179,9 +174,8 @@ Game.prototype.setupGame = function () {
     }
 
     if (this.gameLevel === 2) {
-        this.gamePoints = 750;
+        this.gamePoints = 650;
         this.gameLives = 4;
-        //localStorage.setItem('gameWins', this.numberOfWins);
         this.player = new Player();
         this.allEnemies = [
             new Enemy(-100, 60, this.getRandomIntInclusive(100, 200)),
@@ -205,7 +199,6 @@ Game.prototype.setupGame = function () {
 };
 
 // Play sound depends on what just happened
-// TODO: add sound for level2 advance, gameOver, gameWin, level2 gameOver
 Game.prototype.playSound = function(sound) {
     if (!this.audio.muted) {
         switch (sound) {
@@ -237,7 +230,7 @@ Game.prototype.playSound = function(sound) {
 // Display Game Status and Best Score so far
 Game.prototype.displayStatus = function () {
     console.log('Entered displayStatus');
-    document.getElementById("score").innerHTML = '# of Lives: ' + this.gameLives + '   Game Level: ' + this.gameLevel + '   Game Points: ' + this.gamePoints;
+    document.getElementById("score").innerHTML = '# of Lives: ' + this.gameLives + '   Level: ' + this.gameLevel + '   Points: ' + this.gamePoints;
     document.getElementById("personalBest").innerHTML = "Your Highest Score: " + localStorage.getItem("saveScore") + "   Your Game Wins: " + localStorage.getItem("gameWins");
 
 };
@@ -294,6 +287,7 @@ Game.prototype.updateGame = function () {
         game.playSound('water');
         this.pause = true;
         this.gamePoints += 50;
+        game.displayStatus();
 
         // Check for winning Game Level 2
         if (this.gamePoints >= 800) {
@@ -305,7 +299,7 @@ Game.prototype.updateGame = function () {
 
         // Check for winning Game Level 1 -- Transition to Level 2
         if ((this.gameLevel === 1) && (this.gamePoints >= 400)) {
-            //nextLevel = true;  // Set boolean to determine our game level of play
+            game.saveScore();
             advanceLevel = true; // Set flag for level 2 - display is updated im engine.js
             game.playSound('nextLevel');
             this.gameLevel = 2;
@@ -347,9 +341,11 @@ Game.prototype.updateGame = function () {
 
     // When Player captured an item - Pause, send player back to home row, reset capture flag
     if (this.gameLevel === 2 && this.capture === true) {
-        winGame = true;
-        this.updateGameWins();
-        console.log('------------------------------Just updated gameWins, after capturing an item, localStorage gameWins = ' + localStorage.getItem('gameWins'));
+        if (this.gamePoints >= 800) {
+            winGame = true;
+            this.updateGameWins();
+            console.log('------------------------------Just updated gameWins, after capturing an item, localStorage gameWins = ' + localStorage.getItem('gameWins'));
+        }
         this.pause = true;
         setTimeout(function() {
             //this.player.x = (TILE_WIDTH/2) * 4;
@@ -440,47 +436,24 @@ Game.prototype.playGame = function() {
 // to initialize a new game and re-enable the play game button
 // Retain Persistent highest score and display statistics
 Game.prototype.resetGame = function()  {
-    console.log('Entered resetGame, this.gameLevel = ' + this.gameLevel);
+    console.log('-----> Entered resetGame, this.gameLevel = ' + this.gameLevel + "   winGame = " + winGame);
     initializeGame = true;  // When true, stop game from running (when false go ahead and run game engine)
     endGame = false;
     timeOver = false;
+    winGame = false;
     location.reload(true);  // Reload Page from the Server (if (true))
-    //location.reload();
-    console.log("START OF RESET: this.gameLevel = " + this.gameLevel + "   winGame = " + winGame);
-
-    // Reset to Play Level 1
-    if (this.gameLevel === 1) {
-        this.gameLives = 1;
-        this.gamePoints = 350; // testing
-        countdownTimer('countdown', 0, 30);
-        document.getElementById("announce").innerHTML = "Click Play Game Button to Try Again at Level 1.";
-
-    }
-
-    // Reset to Play Level 2
-    if (this.gameLevel === 2 && winGame === false) {
-        this.gameLives = 4;
-        this.gamePoints = 750;
-        countdownTimer('countdown', 1, 0);
-        document.getElementById("announce").innerHTML = "Click Play Game Button to Play Level 2";
-    }
-
-    game.setupGame();  // Set up game board
-    game.displayStatus();
-    document.getElementById("startButton").disabled = false;
-    console.log("END OF RESET: this.gameLevel = " + this.gameLevel + "  winGame = " + winGame);
 };
 
 // Quit Game on Button Click
 Game.prototype.quitGame = function() {
-    endGame = true;
-    game.pause();
+    //game.pause();
     window.close();
 };
 
 // Clear Score History
 Game.prototype.clearHistory = function() {
     localStorage.clear();
+
 };
 
 // Returns a random integer between min (included) and max (included)
