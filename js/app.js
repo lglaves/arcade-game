@@ -1,3 +1,5 @@
+// TODO: add more levels of game play & make the game playable on mobile phone
+
 "use strict";
 
 // Variables

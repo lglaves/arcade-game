@@ -43,8 +43,9 @@ www.freesound.org
 
 ## Browsers Tested:
 * Chrome Canary
+* Chrome
 * Firefox
-* Internet Explorer
-* Edge
+* Internet Explorer 11 -- no game sounds, only audio loop plays
+* Edge -- no player, no game play (maybe debug this another day)
 * Safari
 
