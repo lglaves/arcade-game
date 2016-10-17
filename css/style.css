@@ -1,7 +1,7 @@
 body {
     text-align: center;
-    font-family: 'Merienda One', cursive;
-    background-color: black;  /* #cc99ff */
+    font-family: "Merienda One", cursive;
+    background-color: black; 
 }
 
 h2 {
@@ -21,7 +21,7 @@ footer {
 
 .btn-custom {
     border-radius: 6px;
-    background-color: hsl(201, 100%, 22%) !important;
+    background-color: hsl(201, 100%, 22%);
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#008bd6", endColorstr="#004870");
     /*background-image: -khtml-gradient(linear, left top, left bottom, from(#008bd6), to(#004870));*/
@@ -32,7 +32,7 @@ footer {
     background-image: -o-linear-gradient(top, #008bd6, #004870);
     background-image: linear-gradient(#008bd6, #004870);
     border-color: #004870 #004870 hsl(201, 100%, 17%);
-    color: #fff !important;
+    color: #fff;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.33);
     -webkit-font-smoothing: antialiased;
     margin: 1em;

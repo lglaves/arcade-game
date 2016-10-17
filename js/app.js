@@ -220,14 +220,15 @@ Game.prototype.displayStatus = function () {
 
 // Check for collisions
 Game.prototype.checkCollisions = function () {
-    for (var i = 0; i < this.allEnemies.length; i++) {
+    var arrayLength = this.allEnemies.length;
+    for (var i = 0; i < arrayLength; i++) {
         // Difference between Enemy and Player y locations is 23
         // Difference between Enemy and Player x locations must be calculated with enemy - player, due to enemies start at x = -100
         if ((Math.abs(this.allEnemies[i].y - this.player.y) <= 23) && (this.player.x >= this.allEnemies[i].x) && (Math.abs(this.player.x - this.allEnemies[i].x) < TILE_WIDTH)) {
-            game.playSound('bug');
+            this.playSound('bug');
             this.collision = true;
             this.capture = false; // prevent almost simultaneous events
-            game.displayStatus();
+            this.displayStatus();
             return;
         }
     }
@@ -236,19 +237,20 @@ Game.prototype.checkCollisions = function () {
 // Check for captures.  If item captured, set capture flag, update game points, update announcement, save score to
 // local storage, delete captured item from array, check for Level 2 win
 Game.prototype.checkCaptures = function () {
-    for (var i = 0; i < this.allItems.length; i++) {
+    var arrayLength = this.allItems.length;
+    for (var i = 0; i < arrayLength; i++) {
         if ((Math.abs(this.allItems[i].y - this.player.y) <= 23) && (Math.abs(this.player.x - this.allItems[i].x) < TILE_WIDTH)) {
             this.capture = true;
             this.collision = false;  // prevent almost simultaneous events
             if (this.allItems[i].sprite === 'images/Heart.png') {
                 this.gamePoints = this.gamePoints + 100;
                 document.getElementById("announce").innerHTML = "Extra Life Heart found: You gained 100 points!!";
-                game.playSound('heart');
+                this.playSound('heart');
             }
             else {
                 this.gamePoints = this.gamePoints + 50;
                 document.getElementById("announce").innerHTML = "Sparkly Gem found: You gained 50 points!!";
-                game.playSound('itemFound');
+                this.playSound('itemFound');
             }
             // Delete this item from array, update score
             this.allItems.splice(i, 1);
@@ -264,10 +266,10 @@ Game.prototype.updateGame = function () {
 
     // Player Reached Water - Win Points / Win Game
     if (this.player.y <= 0) {
-        game.playSound('water');
+        this.playSound('water');
         this.pause = true;
         this.gamePoints += 50;
-        game.displayStatus();
+        this.displayStatus();
 
         // Check for winning Game Level 2
         if (this.gamePoints >= 800) {
@@ -278,9 +280,9 @@ Game.prototype.updateGame = function () {
 
         // Check for winning Game Level 1 -- Transition to Level 2
         if ((this.gameLevel === 1) && (this.gamePoints >= 400)) {
-            game.saveScore();
+            this.saveScore();
             advanceLevel = true; // Set flag for level 2 - display is updated im engine.js
-            game.playSound('nextLevel');
+            this.playSound('nextLevel');
             this.gameLevel = 2;
             localStorage.setItem('gameLevel', 2);
             // Prepare to display Level 2 Game
@@ -292,7 +294,7 @@ Game.prototype.updateGame = function () {
         else {
             setTimeout(function() {
                 document.getElementById("announce").innerHTML = "You Reached Water Safely:  Extra 50 Points!!";
-                game.saveScore();
+                this.saveScore();
                 this.player.x = (TILE_WIDTH/2) * 4; // Return to start place
                 this.player.y = TILE_HEIGHT*5;
                 this.pause = false;
@@ -305,7 +307,7 @@ Game.prototype.updateGame = function () {
     if (this.collision === true) {
         this.pause = true;
         this.gamePoints = this.gamePoints - 50;
-        game.displayStatus();
+        this.displayStatus();
         setTimeout(function() {
             document.getElementById("announce").innerHTML = "BUG CRASH: Minus 50 points ... Try again!!";
             //this.player.x = (TILE_WIDTH/2) * 4;
@@ -341,7 +343,7 @@ Game.prototype.updateGame = function () {
     }
 
     // Update Score Display
-    game.displayStatus();
+    this.displayStatus();
 
     // Game End - Player used up all lives
     if (this.gamePoints < 100) {
@@ -388,7 +390,7 @@ Game.prototype.updateGameWins = function () {
 // Start Game on Button Click - starts countdown timer, and game engine running
 Game.prototype.playGame = function () {
     document.getElementById("startButton").disabled = true;
-    game.pause = false; // Release paused initial game screen
+    this.pause = false; // Release paused initial game screen
     initializeGame  =   false;  // When false, ok to run game engine
 
     if (this.gameLevel === 1) {
@@ -413,7 +415,6 @@ Game.prototype.resetGame = function ()  {
 
 // Quit Game on Button Click
 Game.prototype.quitGame = function () {
-    //game.pause();
     window.close();
 };
 
