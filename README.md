@@ -2,7 +2,10 @@
 
 Using the base project provided by Udacity, I added new functionality to create a 2d javascript/html game similar to the classic arcade game "Frogger".  
 
-This project resides at: https://bitbucket.org/lbethg/frogger
+This project resides at: https://github.com/lglaves/arcade-game
+
+## Latest Deployment Date
+03/01/17 5:05pm EST
 
 ## How to Run the Program
 * Download the zip file to your computer and unzip in any convenient location.
@@ -50,4 +53,9 @@ www.freesound.org
 * Internet Explorer 11 -- no game sounds, only audio loop plays
 * Edge -- no player, no game play (maybe debug this another day)
 * Safari
+
+## Source Code
+- HTML5 Canvas is created in engine.js
+- Reference for responsive canvas: [Mobiforge](https://mobiforge.com/design-development/html5-mobile-web-canvas) 
+-
 
