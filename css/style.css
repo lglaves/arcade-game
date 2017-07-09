@@ -11,6 +11,7 @@ h2 {
 footer {
     font-size: 15px;
     color: white;
+    padding-bottom: 2em;
 }
 
 .timer {
@@ -109,7 +110,7 @@ footer {
 }
 
 .modal-body {
-    font-size: 1.5em;
+    font-size: 1.0em;
     text-align: left;
     margin: 2px;
     padding: 2px 16px;

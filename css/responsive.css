@@ -1,0 +1,227 @@
+/* TODO: Get some media queries to work */
+/* NOTE: Checking this on 7/9/17 -- this was my start to improve the game to be mobile compatible, etc.
+   I will not be committing this file until it is correct. */
+
+/****** Media Queries ******/
+@media (max-device-width: 768px) and (orientation:landscape) { /* 640px */
+
+    .header-logo {
+        border-radius: 10%;
+        max-width: 2.5em;
+    }
+
+    .intro-text h1 {
+        padding-top: 48vh;
+        font-size: 1.5em;
+    }
+
+    .intro-text p {
+        font-size: 1.25em;
+    }
+
+    #intro-name {
+        padding-top: 1em;
+        text-align: center;
+        font-size: 1.5em;
+    }
+
+    #intro-title {
+        text-align: center;
+        font-size: 1.25em;
+    }
+}
+
+@media (max-width: 767px) {
+    .navbar-transparent {
+        background: #000000 !important;
+    }
+}
+/* Extra Small Devices, Phones */
+@media only screen and (min-width: 320px) and (max-width : 480px) and (orientation:portrait) {
+
+    .header-logo {
+        border-radius: 10%;
+        max-width: 2.5em;
+    }
+
+    .intro-text h1 {
+        padding-top: 50vh;
+        font-size: 2.0em;
+    }
+
+    .intro-text p {
+        font-size: 1.45em;
+    }
+
+    #intro-name {
+        padding-top: 6vh;
+        text-align: center;
+        font-size: 2.0em;
+    }
+
+    #intro-title {
+        text-align: center;
+        font-size: 1.45em;
+    }
+
+    .project-title {
+        font-size: 1.75em;
+    }
+
+    .photo-caption {
+        font-size: 0.8em;
+    }
+
+    .modal-title {
+        font-size: 1.2em;
+    }
+
+}
+
+/* Small Devices, Tablets */
+@media only screen and (min-width: 481px) and (max-width: 768px) and (orientation:portrait) {
+
+    .header-logo {
+        border-radius: 10%;
+        max-width: 3.75em;
+    }
+
+    .intro-text h1 {
+        padding-top: 55vh;
+    }
+
+    #intro-name {
+        padding-top: 10vh;
+        text-align: center;
+    }
+
+    #intro-title {
+        text-align: center;
+    }
+
+    .project-image,
+    .modal-image {
+        margin: 0 auto;
+    }
+
+    .project-image {
+        max-width: 70%;
+    }
+
+    .project-title {
+        text-align: center;
+    }
+
+    .fluid-container {
+        margin-bottom: 2em;
+    }
+
+}
+
+/* Medium Devices, Desktops */
+@media screen and (min-width: 768px) and (max-width: 1680px) and (orientation:portrait) {
+
+    .header-logo {
+        border-radius: 10%;
+        max-width: 3.00em;
+    }
+
+    .intro-text h1 {
+        font-size: 4.0em;
+    }
+
+    .intro-text p {
+        font-size: 3.0em;
+    }
+
+    .intro-name {
+        font-size: 4.0em;
+        /*        text-align: right;*/
+        padding-top: 2vh;
+    }
+
+    .intro-title {
+        font-size: 3.0em;
+        /*        text-align: right;*/
+    }
+
+    .container-fluid {
+        margin-bottom: 2.5em;
+    }
+
+    .project-image {
+        width: 70%;
+        margin: 0 auto;
+    }
+
+    .project-info {
+        width: 50%;
+        padding-top: 1.5em;
+    }
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1441px) {
+
+    #menu.navbar-default .navbar-nav > li > a {
+        font-size: 1.5em;
+    }
+    .header-logo {
+        border-radius: 10%;
+        max-width: 8.25em;
+    }
+
+    .intro-text h1 {
+        font-size: 4.0em;
+    }
+
+    .intro-text p {
+        font-size: 3.0em;
+    }
+
+    .intro-name {
+        font-size: 4.0em;
+        /*        text-align: right;*/
+        padding-top: 2vh;
+    }
+
+    .intro-title {
+        font-size: 3.0em;
+        /*        text-align: right;*/
+    }
+
+}
+
+/* -------- default ----------- */
+#mydiv {
+    font-size: 12px;
+    background-color: #9F0;
+}
+/* --------- smartphone ----------- */
+@media screen and (max-width: 767px) {
+    #mydiv {
+        font-size: 14px;
+        background-color: #636;
+    }
+}
+/* -------- tablets----------- */
+@media screen and (min-width: 768px) {
+    #mydiv {
+        font-size: 16px;
+        background-color: #FF0;
+    }
+}
+/* --------- small desktop screen ------------- */
+@media screen and (min-width: 1024px) {
+    #mydiv {
+        font-size: 14px;
+        background-color: #090;
+    }
+}
+/* --------- large desktop screen ------------- */
+@media screen and (min-width: 1280px) {
+    #mydiv {
+        font-size: 16px;
+        background-color: #060;
+    }
+}
